@@ -3,7 +3,7 @@ import * as z from 'zod';
 const MomoWalletRecipientSchema = z.object({
   walletType: z.literal('mtnMomo'),
   phoneNumber: z.string(),
-  email: z.string().email().optional(),
+  email: z.string().max(0).or(z.string().email()),
   name: z
     .string()
     .min(5, 'Must be at least 5 characters')
