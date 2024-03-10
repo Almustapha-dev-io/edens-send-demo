@@ -18,7 +18,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
         as="main"
         w="full"
         pt={{ base: '66px', md: '91px' }}
-        py="80px"
+        pb="80px"
         flex="1"
         display="flex"
         flexDirection="column"

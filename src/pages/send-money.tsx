@@ -42,14 +42,13 @@ export default function SendMoney() {
         maxW="container.xl"
         mx="auto"
         px={{ base: 4, md: 6 }}
-        pt={{ base: '40px', lg: '60px' }}
+        pt={{ base: '16px', lg: '60px' }}
         flex="1"
         direction="column"
         justify="flex-start"
         align="center"
         pos="relative"
       >
-        {/* <BackButton pos="absolute" left={{ base: 4, md: 6 }} top="4px" /> */}
         <Switch>
           <Case condition={pageState === SendMoneyPageState.FORM}>
             <SendMoneyForm />

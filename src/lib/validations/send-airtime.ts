@@ -12,7 +12,7 @@ export const RecipientDetailsSchema = z.object({
     iconUrl: z.string().optional(),
   }),
   phoneNumber: z.string().min(1),
-  email: z.string().max(0).or(z.string().email()),
+  email: z.string().max(0, 'Invalid email').or(z.string().email()),
 });
 
 export type TRecipientDetails = z.infer<typeof RecipientDetailsSchema>;

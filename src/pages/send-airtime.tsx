@@ -42,7 +42,7 @@ export default function SendAirtime() {
         maxW="container.xl"
         mx="auto"
         px={{ base: 4, md: 6 }}
-        pt={{ base: '40px', lg: '60px' }}
+        pt={{ base: '16px', lg: '60px' }}
         flex="1"
         direction="column"
         justify="flex-start"

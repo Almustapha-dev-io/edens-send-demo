@@ -3,7 +3,7 @@ import * as z from 'zod';
 const MomoWalletRecipientSchema = z.object({
   walletType: z.literal('mtnMomo'),
   phoneNumber: z.string(),
-  email: z.string().max(0).or(z.string().email()),
+  email: z.string().max(0, 'Invalid email').or(z.string().email()),
   name: z
     .string()
     .min(5, 'Must be at least 5 characters')
@@ -49,10 +49,6 @@ export const SenderDetailsSchema = z.object({
 export type TSenderDetails = z.infer<typeof SenderDetailsSchema>;
 
 export const SendMoneyAmountSchema = z.object({
-  // amount: z.string().refine((value) => {
-  //   const parsedValue = +value;
-  //   return !isNaN(parsedValue) && isFinite(parsedValue);
-  // }),
   amount: z
     .number()
     .positive('Amount must be greater than 0')

@@ -20,7 +20,6 @@ export default function Header() {
       pos="fixed"
       top="0"
       zIndex="11"
-      //   backdropFilter="blur(10px)"
       bg={{ base: '#fff', md: '#F4FAF9' }}
     >
       <HStack
