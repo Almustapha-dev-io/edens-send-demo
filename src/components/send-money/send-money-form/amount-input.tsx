@@ -9,6 +9,7 @@ type Props = {
   minValue?: number;
   onChange?(value: string | number): void;
   rightAddon?: ReactNode;
+  formatter?(value: string | number): string | number;
 };
 
 const AmountInput = forwardRef<HTMLInputElement, Props>(
@@ -21,35 +22,41 @@ const AmountInput = forwardRef<HTMLInputElement, Props>(
       minValue,
       rightAddon,
       currency = '$',
+      formatter,
     },
     ref
   ) => {
     return (
-      <NumberInput
-        size="lg"
-        variant="unstyled"
-        clampValueOnBlur
-        precision={2}
-        min={minValue}
-        max={maxValue}
-        isDisabled={isDisabled}
-        value={value}
-        onChange={onChange}
-      >
-        <HStack w="full" justify="flex-start" spacing="1">
-          <Text fontWeight="700" fontSize="20px" color="#C4C4C4">
-            {currency}
-          </Text>
-          <NumberInputField
-            fontWeight="700"
-            fontSize="24px"
-            flex="1"
-            _disabled={{ color: '#000' }}
-            ref={ref}
-          />
-          {rightAddon}
-        </HStack>
-      </NumberInput>
+      <HStack w="full" justify="space-between" align="center" spacing="4">
+        <NumberInput
+          w="full"
+          flex="1"
+          size="lg"
+          variant="unstyled"
+          precision={2}
+          min={minValue}
+          max={maxValue}
+          isDisabled={isDisabled}
+          value={value}
+          onChange={onChange}
+          format={formatter}
+        >
+          <HStack w="full" justify="flex-start" spacing="1">
+            <Text fontWeight="700" fontSize="20px" color="#C4C4C4">
+              {currency}
+            </Text>
+            <NumberInputField
+              fontWeight="700"
+              fontSize="24px"
+              flex="1"
+              _disabled={{ color: '#000' }}
+              ref={ref}
+            />
+          </HStack>
+        </NumberInput>
+
+        {rightAddon}
+      </HStack>
     );
   }
 );

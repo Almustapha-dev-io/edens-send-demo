@@ -40,5 +40,7 @@ export const NAV_ITEMS = [
 export const CARD_SHADOW = '0px 4px 15.199999809265137px 0px #0000000D';
 export const POPOVER_SHADOW = '0px 4px 15.199999809265137px 0px #0000000D';
 export const TABLE_SHADOW = '0px 4px 15px 0px #0000001A';
+export const FLAG_URL = (iso2: string) =>
+  `https://flagcdn.com/48x36/${iso2}.png`;
 
 export * from './routes';
