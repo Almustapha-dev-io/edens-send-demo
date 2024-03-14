@@ -43,4 +43,7 @@ export const TABLE_SHADOW = '0px 4px 15px 0px #0000001A';
 export const FLAG_URL = (iso2: string) =>
   `https://flagcdn.com/48x36/${iso2}.png`;
 
+export const PHONE_NUMBER_PATTERN =
+  /^([+(\d]{1})(([\d+() -.]){5,16})([+(\d]{1})$/;
+
 export * from './routes';

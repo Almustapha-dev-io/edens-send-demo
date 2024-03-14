@@ -1,15 +1,21 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 
 import { handleServerError } from '@/lib/errors';
-import { useCreateTransactionParamsMutation } from '@/lib/redux';
+import {
+  useAppSelector,
+  useCreateTransactionParamsMutation,
+  useVerifyBeneficiaryMutation,
+} from '@/lib/redux';
 
 export function useCreateTransactionsParams({
   hideSuccessMsg = false,
   hideErrorMsg = false,
 }: TQueryArgs = {}) {
   const [createTransactionsParamsMutation, params] =
-    useCreateTransactionParamsMutation();
+    useCreateTransactionParamsMutation({
+      fixedCacheKey: 'CREATE_TRANSACTION_PARAMS',
+    });
 
   useEffect(() => {
     if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
@@ -25,6 +31,65 @@ export function useCreateTransactionsParams({
 
   return Object.freeze({
     createTransactionsParamsMutation,
+    ...params,
+  });
+}
+
+export function useSendMoneySources() {
+  const { transactionParams } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+
+  const wallets = useMemo(() => {
+    if (!transactionParams) return [];
+    const walletsList = Object.entries(
+      transactionParams.recipientInstitutions.WALLETS
+    ).map((entry) => ({
+      label: entry[1],
+      value: entry[0],
+    }));
+    return walletsList;
+  }, [transactionParams]);
+
+  const banks = useMemo<TCustomSelectItem<string>[]>(() => {
+    if (!transactionParams) return [];
+    const banksList = Object.entries(
+      transactionParams.recipientInstitutions.BANKS
+    ).map((entry) => ({
+      label: entry[1],
+      value: entry[0],
+    }));
+    return banksList;
+  }, [transactionParams]);
+
+  return { wallets, banks } as const;
+}
+
+export function useVerifyBeneficiary({
+  hideSuccessMsg = false,
+  hideErrorMsg = false,
+}: TQueryArgs = {}) {
+  const [verifyBeneficiaryMutation, params] = useVerifyBeneficiaryMutation();
+
+  useEffect(() => {
+    if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
+      toast(params.data.message, { type: 'success' });
+    }
+  }, [
+    hideSuccessMsg,
+    params.data?.message,
+    params.isLoading,
+    params.isSuccess,
+  ]);
+
+  useEffect(() => {
+    if (!hideErrorMsg && !params.isLoading && params.isError && params.error) {
+      handleServerError(params.error);
+    }
+  }, [hideErrorMsg, params.error, params.isError, params.isLoading]);
+
+  return Object.freeze({
+    verifyBeneficiaryMutation,
     ...params,
   });
 }

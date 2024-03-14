@@ -1,8 +1,12 @@
 import * as z from 'zod';
 
+import { PHONE_NUMBER_PATTERN } from '@/constants';
+
 const MomoWalletRecipientSchema = z.object({
-  walletType: z.literal('mtnMomo'),
-  phoneNumber: z.string(),
+  walletType: z.literal('MTN_MOMO'),
+  phoneNumber: z
+    .string()
+    .regex(PHONE_NUMBER_PATTERN, 'Enter a valid phone number'),
   email: z.string().max(0, 'Invalid email').or(z.string().email()),
   name: z
     .string()
@@ -15,7 +19,7 @@ const MomoWalletRecipientSchema = z.object({
 });
 
 const EdensWalletSchema = z.object({
-  walletType: z.literal('edens'),
+  walletType: z.literal('EDENS360'),
   walletNumber: z.string().min(1, 'Can not be empty'),
   narration: z.string().optional(),
 });
@@ -42,7 +46,9 @@ export type TRecipientBank = z.infer<typeof RecipientBankSchema>;
 export const SenderDetailsSchema = z.object({
   firstName: z.string().min(2, 'Must be at least 2 characters'),
   lastName: z.string().min(2, 'Must be at least 2 characters'),
-  phoneNumber: z.string(),
+  phoneNumber: z
+    .string()
+    .regex(PHONE_NUMBER_PATTERN, 'Enter a valid phone number'),
   email: z.string().email(),
 });
 

@@ -33,6 +33,7 @@ import { useSendMoneyContext } from '@/context/send-money';
 import { useCreateTransactionsParams } from '@/hooks/send-money';
 import { formatNumber, formatPrice } from '@/lib/helpers';
 import {
+  resetSendMoney,
   setSendMoneyTransactionsParams,
   useAppDispatch,
   useAppSelector,
@@ -119,6 +120,18 @@ export default function SendMoneyForm() {
   useEffect(() => {
     createParams(+debouncedAmount, country);
   }, [country, createParams, debouncedAmount]);
+
+  const allowReset = useRef(false);
+
+  useEffect(() => {
+    if (allowReset.current) {
+      dispatch(resetSendMoney());
+    }
+
+    return () => {
+      allowReset.current = true;
+    };
+  }, [country, dispatch]);
 
   const getDestinationCurrency = () => {
     if (!transactionParams) return country === 'NG' ? '₦' : '$';

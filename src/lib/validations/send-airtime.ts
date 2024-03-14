@@ -1,5 +1,7 @@
 import * as z from 'zod';
 
+import { PHONE_NUMBER_PATTERN } from '@/constants';
+
 export const RecipientDetailsSchema = z.object({
   country: z.object({
     label: z.string(),
@@ -11,7 +13,9 @@ export const RecipientDetailsSchema = z.object({
     value: z.string(),
     iconUrl: z.string().optional(),
   }),
-  phoneNumber: z.string().min(1),
+  phoneNumber: z
+    .string()
+    .regex(PHONE_NUMBER_PATTERN, 'Enter a valid phone number'),
   email: z.string().max(0, 'Invalid email').or(z.string().email()),
 });
 

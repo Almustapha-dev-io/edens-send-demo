@@ -51,3 +51,19 @@ type TQueryArgs = {
   hideSuccessMsg?: boolean;
   hideErrorMsg?: boolean;
 };
+
+type TVerifyWalletBeneficiaryDTO = {
+  beneficiary_type: `${string}_WALLET`;
+  wallet_name: string;
+  account_number: string;
+};
+
+type TVerifyBankBeneficiaryDTO = {
+  beneficiary_type: `${string}_BANK`;
+  bank_code: string;
+  account_number: string;
+};
+
+type VerifyBeneficiaryDTO =
+  | TVerifyWalletBeneficiaryDTO
+  | TVerifyBankBeneficiaryDTO;

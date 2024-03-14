@@ -24,6 +24,7 @@ type PhoneNumberInputProps = {
   onValueChange(value: string): void;
   placeholder?: string;
   rightAddon?: ReactNode;
+  inputPr?: InputGroupProps['pr'];
 } & InputGroupProps;
 
 const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
@@ -38,6 +39,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
       name,
       id,
       rightAddon,
+      inputPr,
       ...rest
     },
     ref
@@ -105,7 +107,6 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
               onChange={onCountryChange}
               fontSize="14px"
             >
-              <option value="" />
               {options.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label} ({opt.value})
@@ -126,7 +127,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
         </InputLeftElement>
         <Input
           pl="53px"
-          pr="1.5rem"
+          pr={inputPr}
           type="text"
           value={phoneNumber}
           placeholder={placeholder}
@@ -137,7 +138,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
         />
 
         {rightAddon && (
-          <InputRightElement w="1rem">{rightAddon}</InputRightElement>
+          <InputRightElement w="fit-content">{rightAddon}</InputRightElement>
         )}
       </InputGroup>
     );

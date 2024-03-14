@@ -11,10 +11,12 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { codes as countries } from 'country-calling-code';
+import { useEffect } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 
 import { CARD_SHADOW } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
+import { setSenderDetails, useAppDispatch, useAppSelector } from '@/lib/redux';
 import {
   SenderDetailsSchema,
   TSenderDetails,
@@ -23,14 +25,21 @@ import {
 import PhoneNumberInput from '../ui/phone-number-input';
 
 export default function SenderDetails() {
+  const dispatch = useAppDispatch();
+  const formDetails = useAppSelector(
+    (s) => s.transactionParams.sendMoney.senderDetails
+  );
+
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm<TSenderDetails>({
     resolver: zodResolver(SenderDetailsSchema),
     mode: 'all',
+    defaultValues: formDetails,
   });
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
@@ -38,6 +47,16 @@ export default function SenderDetails() {
   const submitHandler: SubmitHandler<TSenderDetails> = () => {
     onNextPage();
   };
+
+  useEffect(() => {
+    const subscription = watch((_values) => {
+      dispatch(setSenderDetails(_values as TSenderDetails));
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, watch]);
 
   return (
     <chakra.form w="519px" maxW="full" onSubmit={handleSubmit(submitHandler)}>

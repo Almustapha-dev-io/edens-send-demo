@@ -1,6 +1,8 @@
 import {
   Button,
+  ButtonGroup,
   chakra,
+  HStack,
   Image,
   Input,
   InputGroup,
@@ -15,7 +17,7 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Else, If, Then } from 'react-if';
 import { useDebounceValue } from 'usehooks-ts';
 
@@ -32,6 +34,8 @@ type Props<T> = {
   onChange(value: TCustomSelectItem<T>): void;
 };
 
+const PAGE_SIZE = 10;
+
 export default function CustomSelect<T>({
   header = 'Choose One',
   placeholder = 'Select One',
@@ -41,6 +45,7 @@ export default function CustomSelect<T>({
 }: Props<T>) {
   const [searchValue, setSearchValue] = useState('');
   const [debouncedSearch] = useDebounceValue(searchValue, 200);
+  const [page, setPage] = useState(0);
 
   const filterdOptions = useMemo(() => {
     if (!debouncedSearch) return options;
@@ -49,8 +54,27 @@ export default function CustomSelect<T>({
     );
   }, [debouncedSearch, options]);
 
+  const pagedOptions = useMemo(
+    () => filterdOptions.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE),
+    [filterdOptions, page]
+  );
+
+  const onNext = () => {
+    if (page + 1 >= Math.ceil(filterdOptions.length / PAGE_SIZE)) return;
+    setPage((p) => p + 1);
+  };
+
+  const onPrev = () => {
+    if (page <= 0) return;
+    setPage((p) => p - 1);
+  };
+
+  useEffect(() => {
+    setPage(0);
+  }, [debouncedSearch]);
+
   return (
-    <Popover placement="bottom-start" size="lg">
+    <Popover placement="bottom-start" size="lg" isLazy>
       {({ onClose, isOpen }) => (
         <>
           <PopoverTrigger>
@@ -136,14 +160,14 @@ export default function CustomSelect<T>({
                   overflow="auto"
                   className="custom__scroll"
                 >
-                  <If condition={!filterdOptions.length}>
+                  <If condition={!pagedOptions.length}>
                     <Then>
                       <Text w="full" textAlign="center">
                         No options
                       </Text>
                     </Then>
                     <Else>
-                      {filterdOptions.map((opt, i) => (
+                      {pagedOptions.map((opt, i) => (
                         <Button
                           key={i}
                           onClick={() => {
@@ -192,6 +216,31 @@ export default function CustomSelect<T>({
                     </Else>
                   </If>
                 </VStack>
+
+                <HStack justify="center" align="center" w="full">
+                  <ButtonGroup size="sm" isAttached variant="outline">
+                    <Button
+                      fontWeight="400"
+                      fontSize="sm"
+                      minW="82px"
+                      onClick={onPrev}
+                      isDisabled={page <= 0}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      fontWeight="400"
+                      fontSize="sm"
+                      minW="82px"
+                      onClick={onNext}
+                      isDisabled={
+                        page + 1 >= Math.ceil(filterdOptions.length / PAGE_SIZE)
+                      }
+                    >
+                      Next
+                    </Button>
+                  </ButtonGroup>
+                </HStack>
               </VStack>
             </PopoverBody>
           </PopoverContent>

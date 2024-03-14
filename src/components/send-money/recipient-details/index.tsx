@@ -3,13 +3,19 @@ import { useState } from 'react';
 import { Else, If, Then } from 'react-if';
 
 import { CARD_SHADOW } from '@/constants';
+import { useAppSelector } from '@/lib/redux';
 
 import BankDetails from './bank-details';
 import CategoryRadioGroup from './category-radio-group';
 import WalletDetails from './wallet-details';
 
 export default function RecipientDetails() {
-  const [category, setCategory] = useState<'wallet' | 'bank'>('wallet');
+  const { recipientDetails } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+  const [category, setCategory] = useState<'wallet' | 'bank'>(
+    recipientDetails?.category ?? 'wallet'
+  );
 
   return (
     <VStack w="519px" maxW="full" spacing="6">

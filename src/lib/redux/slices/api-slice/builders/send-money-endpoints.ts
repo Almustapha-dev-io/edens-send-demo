@@ -8,6 +8,11 @@ type TTransactionParamsRes = Record<
   TTtransactionParams
 >;
 
+type TVerifyBeneficiaryRes = {
+  beneficiary_name: string;
+  beneficiary_email: string;
+};
+
 export const getSendMoneyEndpoints = (builder: TAppEndpointBuilder) => ({
   createTransactionParams: builder.mutation<
     TServerResponse<TTransactionParamsRes>,
@@ -19,6 +24,21 @@ export const getSendMoneyEndpoints = (builder: TAppEndpointBuilder) => ({
       body,
     }),
     transformResponse: (res: TServerResponse<TTransactionParamsRes>) => res,
+    extraOptions: {
+      ignoreLogout: true,
+    },
+  }),
+
+  verifyBeneficiary: builder.mutation<
+    TServerResponse<TVerifyBeneficiaryRes>,
+    VerifyBeneficiaryDTO
+  >({
+    query: (body) => ({
+      url: '/api/v1/eden_send/verify_beneficiary',
+      method: HttpMethods.POST,
+      body,
+    }),
+    transformResponse: (res: TServerResponse<TVerifyBeneficiaryRes>) => res,
     extraOptions: {
       ignoreLogout: true,
     },

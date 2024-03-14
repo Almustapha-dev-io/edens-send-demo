@@ -8,21 +8,24 @@ import {
   TSenderDetails,
 } from '@/lib/validations/send-money';
 
+type TSendMoneyRecipientDetails =
+  | {
+      category: 'wallet';
+      details: TSendMoneyRecipientWallet;
+    }
+  | {
+      category: 'bank';
+      details: TSendMoneyRecipientBank;
+    };
+
 export type TTransactionParamsState = {
   sendMoney: {
     amount?: string | number;
     country: string;
     transactionParams?: TTtransactionParams;
-    recipientDetails?:
-      | {
-          category: 'wallet';
-          details: TSendMoneyRecipientWallet;
-        }
-      | {
-          category: 'bank';
-          details: TSendMoneyRecipientBank;
-        };
+    recipientDetails?: TSendMoneyRecipientDetails;
     senderDetails?: TSenderDetails;
+    recipientName?: string;
   };
 
   sendAirtime: {
@@ -57,7 +60,55 @@ const createTransactionsParamsSlice = (initialState: TTransactionParamsState) =>
         state.sendMoney.country = country;
       },
 
-      resetSendMoney(state) {
+      setSendMoneyRecipientDetails(
+        state,
+        { payload }: PayloadAction<TSendMoneyRecipientDetails | undefined>
+      ) {
+        state.sendMoney.recipientDetails = payload;
+      },
+
+      setRecipientName(state, { payload }: PayloadAction<string>) {
+        state.sendMoney.recipientName = payload;
+      },
+
+      setSenderDetails(
+        state,
+        { payload }: PayloadAction<TSenderDetails | undefined>
+      ) {
+        state.sendMoney.senderDetails = payload;
+      },
+
+      resetSendMoney(state, { payload }: PayloadAction<string | undefined>) {
+        if (payload === 'amount') {
+          delete state.sendMoney.amount;
+          return;
+        }
+
+        if (payload === 'recipientName') {
+          delete state.sendMoney.recipientName;
+          return;
+        }
+
+        if (payload === 'country') {
+          state.sendMoney.country = 'LR';
+          return;
+        }
+
+        if (payload === 'transactionParams') {
+          delete state.sendMoney.transactionParams;
+          return;
+        }
+
+        if (payload === 'recipientDetails') {
+          delete state.sendMoney.recipientDetails;
+          return;
+        }
+
+        if (payload === 'senderDetails') {
+          delete state.sendMoney.senderDetails;
+          return;
+        }
+
         state.sendMoney = {
           country: '',
         };
@@ -72,5 +123,10 @@ export const transactionParamsSlice = createTransactionsParamsSlice({
   },
 });
 
-export const { resetSendMoney, setSendMoneyTransactionsParams } =
-  transactionParamsSlice.actions;
+export const {
+  resetSendMoney,
+  setSendMoneyTransactionsParams,
+  setSendMoneyRecipientDetails,
+  setRecipientName,
+  setSenderDetails,
+} = transactionParamsSlice.actions;

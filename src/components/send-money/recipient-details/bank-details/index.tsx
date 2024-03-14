@@ -8,47 +8,82 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect, useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 import CustomSelect from '@/components/ui/custom-select';
 import { useSendMoneyContext } from '@/context/send-money';
+import { useSendMoneySources } from '@/hooks/send-money';
+import {
+  setSendMoneyRecipientDetails,
+  useAppDispatch,
+  useAppSelector,
+} from '@/lib/redux';
 import {
   RecipientBankSchema,
   TRecipientBank,
 } from '@/lib/validations/send-money';
 
-import AsyncValidatorInput from './async-validator-input';
-
-const DUMMY_BANKS: TCustomSelectItem<string>[] = [
-  { label: 'GT Bank', iconUrl: '/assets/icons/gtb-logo.svg', value: 'gtb' },
-  {
-    label: 'Access Bank',
-    iconUrl: '/assets/icons/access-logo.svg',
-    value: 'access',
-  },
-  {
-    label: 'UBA',
-    iconUrl: '/assets/icons/uba-logo.svg',
-    value: 'uba',
-  },
-];
+import BankAccountNumber from './bank-account-number';
 
 export default function BankDetails() {
+  const { recipientDetails } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+
+  const dispatch = useAppDispatch();
+
+  const getDefaultValues = (): Partial<TRecipientBank> => {
+    if (!recipientDetails) return {};
+
+    const { details, category } = recipientDetails;
+    if (category !== 'bank') return {};
+
+    return details;
+  };
+
+  const { banks } = useSendMoneySources();
+
   const {
     register,
     control,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<TRecipientBank>({
     resolver: zodResolver(RecipientBankSchema),
     mode: 'all',
+    defaultValues: getDefaultValues(),
   });
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
 
+  const isVerified = useRef(false);
+
   const submitHandler: SubmitHandler<TRecipientBank> = () => {
+    if (!isVerified.current)
+      return toast.error('Enter a verified number!', {
+        position: 'bottom-center',
+      });
+
     onNextPage();
   };
+
+  useEffect(() => {
+    const subscription = watch((values) => {
+      dispatch(
+        setSendMoneyRecipientDetails({
+          category: 'bank',
+          details: values as TRecipientBank,
+        })
+      );
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [dispatch, watch]);
 
   return (
     <chakra.form
@@ -68,7 +103,7 @@ export default function BankDetails() {
               header="Choose Bank"
               value={field.value}
               onChange={field.onChange}
-              options={DUMMY_BANKS}
+              options={banks}
               placeholder="Choose Bank"
             />
             <FormErrorMessage mt="2">
@@ -78,11 +113,7 @@ export default function BankDetails() {
         )}
       />
 
-      <FormControl isInvalid={!!errors.accountNumber}>
-        <FormLabel>Recipient Account Number</FormLabel>
-        <AsyncValidatorInput size="lg" {...register('accountNumber')} />
-        <FormErrorMessage>{errors.accountNumber?.message}</FormErrorMessage>
-      </FormControl>
+      <BankAccountNumber control={control} isVerified={isVerified} />
 
       <FormControl isInvalid={!!errors.narration}>
         <FormLabel>Narration</FormLabel>

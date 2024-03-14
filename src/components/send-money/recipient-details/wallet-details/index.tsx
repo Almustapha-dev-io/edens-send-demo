@@ -9,35 +9,45 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { codes as countries } from 'country-calling-code';
-import { useEffect, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { Case, Switch } from 'react-if';
+import { toast } from 'react-toastify';
 
 import CustomSelect from '@/components/ui/custom-select';
-import PhoneNumberInput from '@/components/ui/phone-number-input';
 import { useSendMoneyContext } from '@/context/send-money';
+import { useSendMoneySources } from '@/hooks/send-money';
+import {
+  setRecipientName,
+  setSendMoneyRecipientDetails,
+  useAppDispatch,
+  useAppSelector,
+} from '@/lib/redux';
 import {
   RecipientWalletSchema,
   TRecipientWallet,
 } from '@/lib/validations/send-money';
 
-import AsyncValidatorInput from './async-validator-input';
-
-const WALLET_TYPES: TCustomSelectItem<'mtnMomo' | 'edens'>[] = [
-  {
-    iconUrl: '/assets/icons/momo-logo.svg',
-    label: 'Edens360 Wallet',
-    value: 'edens',
-  },
-  {
-    iconUrl: '/assets/icons/momo-logo.svg',
-    label: 'MTN MoMo',
-    value: 'mtnMomo',
-  },
-];
+import EdensWalletNumber from './edens-wallet-number';
+import MomoWalletPhone from './momo-wallet-phone';
 
 export default function WalletDetails() {
+  const { recipientDetails } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+  const dispatch = useAppDispatch();
+
+  const getDefaultValues = (): Partial<TRecipientWallet> => {
+    if (!recipientDetails) return {};
+
+    const { details, category } = recipientDetails;
+    if (category !== 'wallet') return {};
+
+    return details;
+  };
+
+  const { wallets } = useSendMoneySources();
+
   const {
     register,
     control,
@@ -48,46 +58,56 @@ export default function WalletDetails() {
   } = useForm<TRecipientWallet>({
     resolver: zodResolver(RecipientWalletSchema),
     mode: 'all',
-    defaultValues: {
-      walletType: 'mtnMomo',
-    },
+    defaultValues: getDefaultValues(),
   });
 
   const [walletType, setWalletType] = useState<
-    TCustomSelectItem<'mtnMomo' | 'edens'> | undefined
-  >({
-    iconUrl: '/assets/icons/momo-logo.svg',
-    label: 'Edens360 Wallet',
-    value: 'edens',
-  });
+    TCustomSelectItem<string> | undefined
+  >(() => wallets.find((w) => w.value === getDefaultValues().walletType));
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
 
+  const isVerified = useRef(false);
+
   const submitHandler: SubmitHandler<TRecipientWallet> = () => {
+    if (!isVerified.current)
+      return toast.error('Enter a verified number!', {
+        position: 'bottom-center',
+      });
+
     onNextPage();
   };
 
   useEffect(() => {
     if (walletType) {
-      setValue('walletType', walletType.value);
+      setValue('walletType', walletType.value as 'EDENS360' | 'MTN_MOMO');
     }
-  }, [setValue, walletType]);
+  }, [dispatch, setValue, walletType]);
 
   useEffect(() => {
     const subsciption = watch((_values, { name }) => {
+      dispatch(
+        setSendMoneyRecipientDetails({
+          category: 'wallet',
+          details: _values as TRecipientWallet,
+        })
+      );
+
       if (name === 'walletType') {
         setValue('email', '');
         setValue('name', '');
         setValue('narration', '');
         setValue('phoneNumber', '');
         setValue('walletNumber', '');
+        dispatch(setRecipientName(''));
+        dispatch(setSendMoneyRecipientDetails());
       }
     });
 
     return () => {
       subsciption.unsubscribe();
     };
-  }, [setValue, watch]);
+  }, [dispatch, setValue, watch]);
 
   return (
     <chakra.form
@@ -104,45 +124,17 @@ export default function WalletDetails() {
           placeholder="Choose Wallet"
           value={walletType}
           onChange={setWalletType}
-          options={WALLET_TYPES}
+          options={wallets}
         />
       </FormControl>
 
       <Switch>
-        <Case condition={watch('walletType') === 'edens'}>
-          <FormControl isInvalid={'walletNumber' in errors}>
-            <FormLabel>Recipient Wallet Number</FormLabel>
-            <AsyncValidatorInput size="lg" {...register('walletNumber')} />
-            {'walletNumber' in errors && (
-              <FormErrorMessage>
-                {errors.walletNumber?.message}
-              </FormErrorMessage>
-            )}
-          </FormControl>
+        <Case condition={watch('walletType') === 'EDENS360'}>
+          <EdensWalletNumber control={control} isVerified={isVerified} />
         </Case>
 
-        <Case condition={watch('walletType') === 'mtnMomo'}>
-          <Controller
-            control={control}
-            name="phoneNumber"
-            render={({ field, fieldState }) => (
-              <FormControl isInvalid={!!fieldState.error}>
-                <FormLabel>Recipient MoMo/Phone number</FormLabel>
-                <PhoneNumberInput
-                  options={countries.map((country) => ({
-                    label: country.country,
-                    value: country.isoCode2,
-                  }))}
-                  country="LR"
-                  size="lg"
-                  ref={field.ref}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                />
-                <FormErrorMessage>{fieldState.error?.message}</FormErrorMessage>
-              </FormControl>
-            )}
-          />
+        <Case condition={watch('walletType') === 'MTN_MOMO'}>
+          <MomoWalletPhone control={control} isVerified={isVerified} />
 
           <FormControl isInvalid={'email' in errors}>
             <FormLabel>Recipient Email address (optional)</FormLabel>

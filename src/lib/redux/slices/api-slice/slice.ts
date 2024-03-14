@@ -19,4 +19,5 @@ export const {
   reducerPath: apiReducerPath,
   middleware: apiMiddleware,
   useCreateTransactionParamsMutation,
+  useVerifyBeneficiaryMutation,
 } = apiSlice;
