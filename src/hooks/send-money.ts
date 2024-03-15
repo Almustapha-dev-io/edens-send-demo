@@ -14,9 +14,7 @@ export function useCreateTransactionsParams({
   hideErrorMsg = false,
 }: TQueryArgs = {}) {
   const [createTransactionsParamsMutation, params] =
-    useCreateTransactionParamsMutation({
-      fixedCacheKey: 'CREATE_TRANSACTION_PARAMS',
-    });
+    useCreateTransactionParamsMutation();
 
   useEffect(() => {
     if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
