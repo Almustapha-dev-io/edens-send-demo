@@ -1,4 +1,5 @@
 import { Flex, Image, useBreakpointValue } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Case, Switch } from 'react-if';
 
 import RecipientDetails from '@/components/send-money/recipient-details';
@@ -7,11 +8,29 @@ import SendMoneyForm from '@/components/send-money/send-money-form';
 import SenderDetails from '@/components/send-money/sender-details';
 import TransferSummary from '@/components/send-money/transfer-summary';
 import { useSendMoneyContext } from '@/context/send-money';
+import { useIsAuthenticated, useWillUnmount } from '@/hooks';
+import { resetSendMoney, useAppDispatch } from '@/lib/redux';
 import { SendMoneyPageState } from '@/types/enums';
 
 export default function SendMoney() {
   const isLargeScreen = useBreakpointValue({ base: false, lg: true });
-  const { pageState } = useSendMoneyContext();
+  const { pageState, setPage } = useSendMoneyContext();
+  const isAuth = useIsAuthenticated();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (
+      !isAuth &&
+      (pageState === SendMoneyPageState.SECURE_DETAILS ||
+        pageState === SendMoneyPageState.SUMMARY)
+    ) {
+      setPage(SendMoneyPageState.SENDER_DETAILS);
+    }
+  }, [isAuth, pageState, setPage]);
+
+  useWillUnmount(() => {
+    dispatch(resetSendMoney());
+  });
 
   return (
     <>

@@ -21,6 +21,7 @@ import { useSendMoneyContext } from '@/context/send-money';
 import {
   useCheckEdensSendClient,
   useIsAuthenticated,
+  useUser,
   useWillUnmount,
 } from '@/hooks';
 import { getServerErrorMessage, handleServerError } from '@/lib/errors';
@@ -38,6 +39,9 @@ export default function SenderDetails() {
   const formDetails = useAppSelector(
     (s) => s.transactionParams.sendMoney.senderDetails
   );
+  const user = useUser();
+  const isAuth = useIsAuthenticated();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -48,12 +52,13 @@ export default function SenderDetails() {
   } = useForm<TSenderDetails>({
     resolver: zodResolver(SenderDetailsSchema),
     mode: 'all',
-    defaultValues: formDetails,
+    defaultValues: {
+      ...formDetails,
+      email: isAuth ? user?.email ?? formDetails?.email : formDetails?.email,
+    },
   });
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
-  const isAuth = useIsAuthenticated();
-  const navigate = useNavigate();
 
   const { checkClientMutation, isLoading, isSuccess, error, isError } =
     useCheckEdensSendClient({
@@ -190,7 +195,7 @@ export default function SenderDetails() {
             )}
           />
 
-          <FormControl isInvalid={!!errors.email}>
+          <FormControl isInvalid={!!errors.email} isDisabled={isAuth}>
             <FormLabel>Email address</FormLabel>
             <Input
               type="email"

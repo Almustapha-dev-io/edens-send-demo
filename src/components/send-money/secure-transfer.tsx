@@ -15,7 +15,12 @@ import { useEffect } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { If, Then } from 'react-if';
 
-import { CARD_SHADOW, RELATIONSHIPS } from '@/constants';
+import {
+  CARD_SHADOW,
+  RELATIONSHIPS,
+  SOURCE_OF_FUNDS,
+  TRANSFER_PURPOSE,
+} from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
 import {
   setSecureTransferDetails,
@@ -127,7 +132,9 @@ export default function SecureTransfer() {
               <option value="" disabled>
                 Source of funds
               </option>
-              <option value="salary">Salary</option>
+              {SOURCE_OF_FUNDS.map((o) => (
+                <option value={o.toLowerCase()}>{o}</option>
+              ))}
               <option value="others">Others</option>
             </Select>
             <FormErrorMessage>{errors.sourceOfFunds?.message}</FormErrorMessage>
@@ -151,7 +158,9 @@ export default function SecureTransfer() {
               <option value="" disabled>
                 Purpose of transfer
               </option>
-              <option value="school fees">School fees</option>
+              {TRANSFER_PURPOSE.map((o) => (
+                <option value={o.toLowerCase()}>{o}</option>
+              ))}
               <option value="others">Others</option>
             </Select>
             <FormErrorMessage>

@@ -1,6 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { login, resetPasswordRequest, validPasswordReset } from './thunks';
+import {
+  login,
+  resetPasswordRequest,
+  signup,
+  validPasswordReset,
+  verifyAccount,
+} from './thunks';
 
 export type TAuthState = {
   userDetails?: TUser;
@@ -8,6 +14,8 @@ export type TAuthState = {
   status: 'idle' | 'pending';
   error?: string;
   successMsg?: string;
+  signupSuccess?: boolean;
+  verifyAccountSuccess?: boolean;
   resetRequestSuccess?: boolean;
   passwordResetSuccess?: boolean;
 };
@@ -40,6 +48,12 @@ const createAuthSlice = (initialState: TAuthState) =>
       setUser(state, { payload }: PayloadAction<TUser>) {
         state.userDetails = payload;
       },
+      setSignupStatus(state, { payload }: PayloadAction<boolean>) {
+        state.signupSuccess = payload;
+      },
+      setVerifyAccountStatus(state, { payload }: PayloadAction<boolean>) {
+        state.verifyAccountSuccess = payload;
+      },
       setResetStatus(state, { payload }: PayloadAction<boolean>) {
         state.resetRequestSuccess = payload;
       },
@@ -53,6 +67,12 @@ const createAuthSlice = (initialState: TAuthState) =>
       clearPasswordResetSuccess(state) {
         delete state.resetRequestSuccess;
       },
+      clearSignupSuccess(state) {
+        delete state.signupSuccess;
+      },
+      clearVerifyAccountStatus(state) {
+        delete state.verifyAccountSuccess;
+      },
     },
     extraReducers: (builder) => {
       // Login cases
@@ -65,7 +85,7 @@ const createAuthSlice = (initialState: TAuthState) =>
         state.status = 'idle';
         state.error = '';
         state.accessToken = payload.token;
-        state.userDetails = payload.user;
+        state.userDetails = payload.edenSendClient;
         delete state.successMsg;
         delete state.passwordResetSuccess;
       });
@@ -73,6 +93,51 @@ const createAuthSlice = (initialState: TAuthState) =>
       builder.addCase(login.rejected, (state, { payload }) => {
         state.status = 'idle';
         state.error = payload;
+        delete state.successMsg;
+      });
+
+      // Signup cases
+      builder.addCase(signup.pending, (state) => {
+        state.status = 'pending';
+        state.error = '';
+        state.signupSuccess = false;
+      });
+
+      builder.addCase(signup.fulfilled, (state, { payload }) => {
+        state.status = 'idle';
+        state.error = '';
+        state.accessToken = payload.token;
+        state.userDetails = payload.edenSendClient;
+        state.signupSuccess = true;
+      });
+
+      builder.addCase(signup.rejected, (state, { payload }) => {
+        state.status = 'idle';
+        state.error = payload;
+        state.signupSuccess = false;
+        delete state.successMsg;
+      });
+
+      // Signup verify cases
+      builder.addCase(verifyAccount.pending, (state) => {
+        state.status = 'pending';
+        state.error = '';
+        state.verifyAccountSuccess = false;
+      });
+
+      builder.addCase(verifyAccount.fulfilled, (state) => {
+        state.status = 'idle';
+        state.error = '';
+        state.verifyAccountSuccess = true;
+        if (state.userDetails) {
+          state.userDetails.email_verified = true;
+        }
+      });
+
+      builder.addCase(verifyAccount.rejected, (state, { payload }) => {
+        state.status = 'idle';
+        state.error = payload;
+        state.verifyAccountSuccess = false;
         delete state.successMsg;
       });
 
@@ -133,4 +198,8 @@ export const {
   setResetStatus,
   initAuth,
   clearPasswordResetSuccess,
+  clearSignupSuccess,
+  setSignupStatus,
+  clearVerifyAccountStatus,
+  setVerifyAccountStatus,
 } = authSlice.actions;

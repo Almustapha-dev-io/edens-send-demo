@@ -1,4 +1,5 @@
 import { Modal, ModalBody, ModalContent, ModalOverlay } from '@chakra-ui/react';
+import { useCallback, useEffect } from 'react';
 import { Case, Switch } from 'react-if';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -10,31 +11,47 @@ import ForgotPasswordVerify from '@/components/auth/forgot-password-verify';
 import Login from '@/components/auth/login';
 import PasswordSuccess from '@/components/auth/password-success';
 import VerifyAccount from '@/components/auth/verify-account';
+import { useIsAuthenticated } from '@/hooks';
+
+const routeParams = [
+  'login',
+  'forgot-password',
+  'forgot-password-verify',
+  'create-password',
+  'verify-account',
+  'password-success',
+  'complete-login',
+  'complete-signup',
+];
 
 export default function Auth() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const isAuth = useIsAuthenticated();
 
-  const isPageOpen = (url: string) => !!searchParams.get(url);
+  const isPageOpen = useCallback(
+    (url: string) => !!searchParams.get(url),
+    [searchParams]
+  );
 
   const onClose = () => {
     navigate(pathname, { replace: true });
   };
 
+  useEffect(() => {
+    if (isAuth && routeParams.some(isPageOpen)) {
+      routeParams.forEach((r) => searchParams.delete(r));
+      setSearchParams(searchParams);
+    }
+  }, [isAuth, isPageOpen, searchParams, setSearchParams]);
+
   return (
     <Modal
       size="md"
-      isOpen={
-        isPageOpen('login') ||
-        isPageOpen('forgot-password') ||
-        isPageOpen('forgot-password-verify') ||
-        isPageOpen('create-password') ||
-        isPageOpen('verify-account') ||
-        isPageOpen('password-success') ||
-        isPageOpen('complete-login') ||
-        isPageOpen('complete-signup')
-      }
+      closeOnEsc={false}
+      closeOnOverlayClick={false}
+      isOpen={routeParams.some(isPageOpen)}
       onClose={onClose}
     >
       <ModalOverlay />

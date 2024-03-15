@@ -1,8 +1,17 @@
-import { Heading, Stack, useBreakpointValue, VStack } from '@chakra-ui/react';
+import {
+  Button,
+  Center,
+  Heading,
+  Stack,
+  useBreakpointValue,
+  VStack,
+} from '@chakra-ui/react';
+import { Else, If, Then } from 'react-if';
 
 import BackButton from '@/components/ui/back-button';
 import RouterLink from '@/components/ui/router-link';
-import { HISTORY_ROUTE } from '@/constants';
+import { HISTORY_ROUTE, LOGIN } from '@/constants';
+import { useIsAuthenticated } from '@/hooks';
 
 import TransactionStatus from '../transactions/transaction-status';
 import TransactionDetailsLg from './transaction-details-lg';
@@ -20,9 +29,10 @@ const dummyTr: TTransaction = {
 
 export default function TransactionDetails() {
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
+  const isAuth = useIsAuthenticated();
 
   let content = <></>;
-  if (isSmallScreen) {
+  if (isSmallScreen && isAuth) {
     content = <TransactionDetailsSm transaction={dummyTr} />;
   } else {
     content = <TransactionDetailsLg transaction={dummyTr} />;
@@ -45,10 +55,35 @@ export default function TransactionDetails() {
           Transaction details
         </Heading>
 
-        <TransactionStatus status={dummyTr.status} />
+        {isAuth && <TransactionStatus status={dummyTr.status} />}
       </Stack>
 
-      {content}
+      <If condition={isAuth}>
+        <Then>{content}</Then>
+        <Else>
+          <Center w="full" minH="250px">
+            <VStack spacing="4">
+              <Heading
+                fontWeight="500"
+                maxW={{ base: '300px', lg: '400px' }}
+                fontSize={{ base: '20px', lg: '24' }}
+                textAlign="center"
+              >
+                Login to view your transaction details
+              </Heading>
+              <RouterLink to={LOGIN}>
+                <Button
+                  size="lg"
+                  minW="150px"
+                  variant={{ base: 'outline', lg: 'solid' }}
+                >
+                  Login
+                </Button>
+              </RouterLink>
+            </VStack>
+          </Center>
+        </Else>
+      </If>
     </VStack>
   );
 }

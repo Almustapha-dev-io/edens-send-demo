@@ -13,12 +13,14 @@ type TSendMoneyContext = {
   onNextPage(): void;
   onPrevioussPage(): void;
   resetPageState(): void;
+  setPage(page: SendMoneyPageState): void;
 };
 
 const SendMoneyContext = createContext<TSendMoneyContext>({
   onNextPage() {},
   onPrevioussPage() {},
   resetPageState() {},
+  setPage() {},
   pageState: SendMoneyPageState.FORM,
 });
 
@@ -40,6 +42,10 @@ export default function SendMoneyContextProvider({
   const [curPage, setCurPage] = useState<SendMoneyPageState>(
     SendMoneyPageState.FORM
   );
+
+  const setPage = useCallback((p: SendMoneyPageState) => {
+    setCurPage(p);
+  }, []);
 
   const onNextPage = useCallback(() => {
     setCurPage((cur) => {
@@ -79,6 +85,7 @@ export default function SendMoneyContextProvider({
         onNextPage,
         onPrevioussPage,
         resetPageState,
+        setPage,
         pageState: curPage,
       }}
     >

@@ -1,13 +1,34 @@
 import { Button, Heading, VStack } from '@chakra-ui/react';
+import { useMemo } from 'react';
 
 import { CARD_SHADOW } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
+import { formatPrice } from '@/lib/helpers';
+import { useAppSelector } from '@/lib/redux';
 
 import RecipientDetails from './recipient-details';
 import TransferDetails from './transfer-details';
 
 export default function TransferSummary() {
   const { onPrevioussPage, resetPageState } = useSendMoneyContext();
+
+  const { amount, transactionParams } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+
+  const totalAmount = useMemo(() => {
+    if (!transactionParams || !amount)
+      return formatPrice(0, { fractionDigits: 2 });
+
+    const parsedAmount = +amount;
+    if (!isFinite(parsedAmount) || isNaN(parsedAmount))
+      return formatPrice(0, { fractionDigits: 2 });
+
+    const total = parsedAmount + transactionParams.fee;
+    return formatPrice(total, {
+      fractionDigits: 2,
+    });
+  }, [amount, transactionParams]);
 
   return (
     <VStack w="519px" maxW="full" spacing="6">
@@ -41,7 +62,7 @@ export default function TransferSummary() {
             variant={{ base: 'outline', lg: 'solid' }}
             onClick={resetPageState}
           >
-            Pay $200
+            Pay {totalAmount}
           </Button>
           <Button
             size="lg"
