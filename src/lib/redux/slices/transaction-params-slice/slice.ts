@@ -26,6 +26,7 @@ export type TTransactionParamsState = {
     recipientDetails?: TSendMoneyRecipientDetails;
     senderDetails?: TSenderDetails;
     recipientName?: string;
+    recipientEmail?: string;
   };
 
   sendAirtime: {
@@ -71,6 +72,10 @@ const createTransactionsParamsSlice = (initialState: TTransactionParamsState) =>
         state.sendMoney.recipientName = payload;
       },
 
+      setRecipientEmail(state, { payload }: PayloadAction<string>) {
+        state.sendMoney.recipientEmail = payload;
+      },
+
       setSenderDetails(
         state,
         { payload }: PayloadAction<TSenderDetails | undefined>
@@ -86,6 +91,11 @@ const createTransactionsParamsSlice = (initialState: TTransactionParamsState) =>
 
         if (payload === 'recipientName') {
           delete state.sendMoney.recipientName;
+          return;
+        }
+
+        if (payload === 'recipientEmail') {
+          delete state.sendMoney.recipientEmail;
           return;
         }
 
@@ -129,4 +139,5 @@ export const {
   setSendMoneyRecipientDetails,
   setRecipientName,
   setSenderDetails,
+  setRecipientEmail,
 } = transactionParamsSlice.actions;

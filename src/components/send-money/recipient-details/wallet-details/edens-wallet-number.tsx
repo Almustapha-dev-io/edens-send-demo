@@ -18,7 +18,12 @@ import { useDebounceValue } from 'usehooks-ts';
 
 import { useVerifyBeneficiary } from '@/hooks/send-money';
 import { getServerErrorMessage } from '@/lib/errors';
-import { setRecipientName, useAppDispatch, useAppSelector } from '@/lib/redux';
+import {
+  setRecipientEmail,
+  setRecipientName,
+  useAppDispatch,
+  useAppSelector,
+} from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 import { TRecipientWallet } from '@/lib/validations/send-money';
 
@@ -83,13 +88,22 @@ export default function EdensWalletNumber({ control, isVerified }: Props) {
     if (isSuccess && !isLoading) {
       isVerified.current = true;
       dispatch(setRecipientName(data?.beneficiary_name));
+      dispatch(setRecipientEmail(data?.beneficiary_email));
     }
-  }, [data?.beneficiary_name, dispatch, isLoading, isSuccess, isVerified]);
+  }, [
+    data?.beneficiary_email,
+    data?.beneficiary_name,
+    dispatch,
+    isLoading,
+    isSuccess,
+    isVerified,
+  ]);
 
   useEffect(() => {
     if (isError && !isLoading) {
       isVerified.current = false;
       dispatch(setRecipientName(''));
+      dispatch(setRecipientEmail(''));
     }
   }, [dispatch, isError, isLoading, isVerified]);
 

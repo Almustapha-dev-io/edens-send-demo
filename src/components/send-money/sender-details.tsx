@@ -115,7 +115,7 @@ export default function SenderDetails() {
             name="phoneNumber"
             render={({ field, fieldState }) => (
               <FormControl isInvalid={!!fieldState.error}>
-                <FormLabel>Recipient MoMo/Phone number</FormLabel>
+                <FormLabel>Phone number</FormLabel>
                 <PhoneNumberInput
                   id="phoneNumber"
                   options={countries.map((country) => ({
