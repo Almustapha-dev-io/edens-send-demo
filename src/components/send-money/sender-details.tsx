@@ -11,12 +11,21 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { codes as countries } from 'country-calling-code';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { CARD_SHADOW } from '@/constants';
+import { CARD_SHADOW, COMPLETE_LOGIN, COMPLETE_SIGNUP } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
+import {
+  useCheckEdensSendClient,
+  useIsAuthenticated,
+  useWillUnmount,
+} from '@/hooks';
+import { getServerErrorMessage, handleServerError } from '@/lib/errors';
 import { setSenderDetails, useAppDispatch, useAppSelector } from '@/lib/redux';
+import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 import {
   SenderDetailsSchema,
   TSenderDetails,
@@ -43,10 +52,38 @@ export default function SenderDetails() {
   });
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
+  const isAuth = useIsAuthenticated();
+  const navigate = useNavigate();
 
-  const submitHandler: SubmitHandler<TSenderDetails> = () => {
-    onNextPage();
+  const { checkClientMutation, isLoading, isSuccess, error, isError } =
+    useCheckEdensSendClient({
+      hideSuccessMsg: true,
+      hideErrorMsg: true,
+    });
+
+  const triggerRef = useRef<TMutationCreatorResult>();
+
+  const submitHandler: SubmitHandler<TSenderDetails> = ({ email }) => {
+    if (isLoading) {
+      toast('Verifying your email...', { type: 'info' });
+      return;
+    }
+
+    if (isAuth) {
+      onNextPage();
+      return;
+    }
+
+    triggerRef.current = checkClientMutation({
+      email,
+    });
   };
+
+  useWillUnmount(() => {
+    if (triggerRef.current) {
+      triggerRef.current.abort();
+    }
+  });
 
   useEffect(() => {
     const subscription = watch((_values) => {
@@ -57,6 +94,26 @@ export default function SenderDetails() {
       subscription.unsubscribe();
     };
   }, [dispatch, watch]);
+
+  useEffect(() => {
+    if (isSuccess && !isLoading) {
+      navigate(COMPLETE_LOGIN);
+    }
+  }, [isLoading, isSuccess, navigate]);
+
+  useEffect(() => {
+    if (isError && !isLoading) {
+      const errorMsg = getServerErrorMessage(error);
+      if (
+        typeof errorMsg === 'string' &&
+        errorMsg.toLowerCase() === 'sender not found'
+      ) {
+        navigate(COMPLETE_SIGNUP);
+      } else {
+        handleServerError(error);
+      }
+    }
+  }, [isError, isLoading, navigate, error]);
 
   return (
     <chakra.form w="519px" maxW="full" onSubmit={handleSubmit(submitHandler)}>
@@ -151,6 +208,7 @@ export default function SenderDetails() {
               w="full"
               variant={{ base: 'outline', lg: 'solid' }}
               type="submit"
+              isLoading={isLoading}
             >
               Continue
             </Button>

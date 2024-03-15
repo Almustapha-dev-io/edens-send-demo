@@ -2,6 +2,7 @@ import { Flex, Image, useBreakpointValue } from '@chakra-ui/react';
 import { Case, Switch } from 'react-if';
 
 import RecipientDetails from '@/components/send-money/recipient-details';
+import SecureTransfer from '@/components/send-money/secure-transfer';
 import SendMoneyForm from '@/components/send-money/send-money-form';
 import SenderDetails from '@/components/send-money/sender-details';
 import TransferSummary from '@/components/send-money/transfer-summary';
@@ -58,6 +59,9 @@ export default function SendMoney() {
           </Case>
           <Case condition={pageState === SendMoneyPageState.SENDER_DETAILS}>
             <SenderDetails />
+          </Case>
+          <Case condition={pageState === SendMoneyPageState.SECURE_DETAILS}>
+            <SecureTransfer />
           </Case>
           <Case condition={pageState === SendMoneyPageState.SUMMARY}>
             <TransferSummary />

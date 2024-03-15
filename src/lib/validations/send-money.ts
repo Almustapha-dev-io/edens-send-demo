@@ -76,3 +76,45 @@ export const SendMoneyAmountSchema = z.object({
 });
 
 export type TSendMoneyAmount = z.infer<typeof SendMoneyAmountSchema>;
+
+export const SecureTransferSchema = z
+  .object({
+    senderCountry: z.object({
+      label: z.string().min(1),
+      value: z.string(),
+      iconUrl: z.string().optional(),
+    }),
+    sourceOfFunds: z.string().min(1, 'Cannot be empty'),
+    otherSourceOfFunds: z.string().optional(),
+    transferPurpose: z.string().min(1, 'Cannot be empty'),
+    otherTransferPurpose: z.string().optional(),
+    relationship: z.string().min(1, 'Cannot be empty'),
+    otherRelationship: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.sourceOfFunds === 'others' && !data.otherSourceOfFunds) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['otherSourceOfFunds'],
+        message: 'Enter a source of funds',
+      });
+    }
+
+    if (data.transferPurpose === 'others' && !data.otherTransferPurpose) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['otherTransferPurpose'],
+        message: 'Enter a purpose of transfer',
+      });
+    }
+
+    if (data.relationship === 'others' && !data.otherRelationship) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['otherRelationship'],
+        message: 'Enter relationship',
+      });
+    }
+  });
+
+export type TSecureTransferSchema = z.infer<typeof SecureTransferSchema>;

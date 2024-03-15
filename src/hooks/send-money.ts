@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { handleServerError } from '@/lib/errors';
 import {
   useAppSelector,
+  useCheckEdensClientMutation,
   useCreateTransactionParamsMutation,
   useVerifyBeneficiaryMutation,
 } from '@/lib/redux';
@@ -90,6 +91,35 @@ export function useVerifyBeneficiary({
 
   return Object.freeze({
     verifyBeneficiaryMutation,
+    ...params,
+  });
+}
+
+export function useCheckEdensSendClient({
+  hideSuccessMsg = false,
+  hideErrorMsg = false,
+}: TQueryArgs = {}) {
+  const [checkClientMutation, params] = useCheckEdensClientMutation();
+
+  useEffect(() => {
+    if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
+      toast(params.data.message, { type: 'success' });
+    }
+  }, [
+    hideSuccessMsg,
+    params.data?.message,
+    params.isLoading,
+    params.isSuccess,
+  ]);
+
+  useEffect(() => {
+    if (!hideErrorMsg && !params.isLoading && params.isError && params.error) {
+      handleServerError(params.error);
+    }
+  }, [hideErrorMsg, params.error, params.isError, params.isLoading]);
+
+  return Object.freeze({
+    checkClientMutation,
     ...params,
   });
 }

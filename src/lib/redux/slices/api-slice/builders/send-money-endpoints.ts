@@ -43,4 +43,18 @@ export const getSendMoneyEndpoints = (builder: TAppEndpointBuilder) => ({
       ignoreLogout: true,
     },
   }),
+
+  checkEdensClient: builder.mutation<
+    TServerResponse<{}>,
+    Record<'email', string>
+  >({
+    query: (body) => ({
+      url: '/api/v1/eden_send/auth/check_sender',
+      method: HttpMethods.POST,
+      body,
+    }),
+    extraOptions: {
+      ignoreLogout: true,
+    },
+  }),
 });

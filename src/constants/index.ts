@@ -46,4 +46,16 @@ export const FLAG_URL = (iso2: string) =>
 export const PHONE_NUMBER_PATTERN =
   /^([+(\d]{1})(([\d+() -.]){5,16})([+(\d]{1})$/;
 
+export const RELATIONSHIPS = [
+  'Father',
+  'Mother',
+  'Brother',
+  'Sister',
+  'Cousin',
+  'Uncle',
+  'Aunt',
+  'Nephew',
+  'Niece',
+];
+
 export * from './routes';

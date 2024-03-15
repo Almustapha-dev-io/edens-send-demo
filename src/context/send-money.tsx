@@ -48,6 +48,8 @@ export default function SendMoneyContextProvider({
       if (cur === SendMoneyPageState.RECIPIENT_DETAILS)
         return SendMoneyPageState.SENDER_DETAILS;
       if (cur === SendMoneyPageState.SENDER_DETAILS)
+        return SendMoneyPageState.SECURE_DETAILS;
+      if (cur === SendMoneyPageState.SECURE_DETAILS)
         return SendMoneyPageState.SUMMARY;
       return cur;
     });
@@ -56,6 +58,8 @@ export default function SendMoneyContextProvider({
   const onPrevioussPage = useCallback(() => {
     setCurPage((cur) => {
       if (cur === SendMoneyPageState.SUMMARY)
+        return SendMoneyPageState.SECURE_DETAILS;
+      if (cur === SendMoneyPageState.SECURE_DETAILS)
         return SendMoneyPageState.SENDER_DETAILS;
       if (cur === SendMoneyPageState.SENDER_DETAILS)
         return SendMoneyPageState.RECIPIENT_DETAILS;

@@ -5,6 +5,7 @@ import { TRecipientDetails as TSendAirtimeRecipientDetails } from '@/lib/validat
 import {
   TRecipientBank as TSendMoneyRecipientBank,
   TRecipientWallet as TSendMoneyRecipientWallet,
+  TSecureTransferSchema,
   TSenderDetails,
 } from '@/lib/validations/send-money';
 
@@ -25,6 +26,7 @@ export type TTransactionParamsState = {
     transactionParams?: TTtransactionParams;
     recipientDetails?: TSendMoneyRecipientDetails;
     senderDetails?: TSenderDetails;
+    secureTransferDetails?: TSecureTransferSchema;
     recipientName?: string;
     recipientEmail?: string;
   };
@@ -81,6 +83,13 @@ const createTransactionsParamsSlice = (initialState: TTransactionParamsState) =>
         { payload }: PayloadAction<TSenderDetails | undefined>
       ) {
         state.sendMoney.senderDetails = payload;
+      },
+
+      setSecureTransferDetails(
+        state,
+        { payload }: PayloadAction<TSecureTransferSchema | undefined>
+      ) {
+        state.sendMoney.secureTransferDetails = payload;
       },
 
       resetSendMoney(state, { payload }: PayloadAction<string | undefined>) {
@@ -140,4 +149,5 @@ export const {
   setRecipientName,
   setSenderDetails,
   setRecipientEmail,
+  setSecureTransferDetails,
 } = transactionParamsSlice.actions;

@@ -20,4 +20,5 @@ export const {
   middleware: apiMiddleware,
   useCreateTransactionParamsMutation,
   useVerifyBeneficiaryMutation,
+  useCheckEdensClientMutation,
 } = apiSlice;
