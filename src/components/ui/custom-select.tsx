@@ -14,6 +14,7 @@ import {
   PopoverContent,
   PopoverHeader,
   PopoverTrigger,
+  Portal,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -29,6 +30,7 @@ import SearchIcon from '../icons/search-icon';
 type Props<T> = {
   header?: string;
   placeholder?: string;
+  searchPlaceholder?: string;
   value?: TCustomSelectItem<T>;
   options: TCustomSelectItem<T>[];
   onChange(value: TCustomSelectItem<T>): void;
@@ -39,6 +41,7 @@ const PAGE_SIZE = 10;
 export default function CustomSelect<T>({
   header = 'Choose One',
   placeholder = 'Select One',
+  searchPlaceholder = 'Search...',
   options,
   value,
   onChange,
@@ -74,7 +77,7 @@ export default function CustomSelect<T>({
   }, [debouncedSearch]);
 
   return (
-    <Popover placement="bottom-start" size="lg" isLazy>
+    <Popover placement="bottom-start" size="lg" isLazy variant="custom">
       {({ onClose, isOpen }) => (
         <>
           <PopoverTrigger>
@@ -111,139 +114,143 @@ export default function CustomSelect<T>({
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent
-            mt="2"
-            borderColor="gray.200"
-            bg="#fff"
-            px="4"
-            py="20px"
-            rounded="15px"
-            shadow={POPOVER_SHADOW}
-            w="415px"
-            maxW="90vw"
-          >
-            <PopoverHeader
-              borderBottomWidth="0px"
-              display="flex"
-              flexDir="row"
-              justifyContent="space-between"
-              alignItems="center"
-              px="0"
-              pt="0"
+          <Portal>
+            <PopoverContent
+              mt="2"
+              borderColor="gray.200"
+              bg="#fff"
+              px="4"
+              py="20px"
+              rounded="15px"
+              shadow={POPOVER_SHADOW}
+              w="415px"
+              maxW="90vw"
+              className="custom-select__popover"
             >
-              <chakra.span fontWeight="700" fontSize="16px">
-                {header}
-              </chakra.span>
-              <PopoverCloseButton pos="static" bg="#DEE4EB" rounded="full" />
-            </PopoverHeader>
+              <PopoverHeader
+                borderBottomWidth="0px"
+                display="flex"
+                flexDir="row"
+                justifyContent="space-between"
+                alignItems="center"
+                px="0"
+                pt="0"
+              >
+                <chakra.span fontWeight="700" fontSize="16px">
+                  {header}
+                </chakra.span>
+                <PopoverCloseButton pos="static" bg="#DEE4EB" rounded="full" />
+              </PopoverHeader>
 
-            <PopoverBody px="0" pt="20px" pb="10px">
-              <VStack w="full" spacing="20px">
-                <InputGroup size="lg">
-                  <InputLeftElement>
-                    <SearchIcon />
-                  </InputLeftElement>
-                  <Input
-                    placeholder="Search"
-                    value={searchValue}
-                    onChange={(e) => setSearchValue(e.target.value)}
-                  />
-                </InputGroup>
+              <PopoverBody px="0" pt="20px" pb="10px">
+                <VStack w="full" spacing="20px">
+                  <InputGroup size="lg">
+                    <InputLeftElement>
+                      <SearchIcon />
+                    </InputLeftElement>
+                    <Input
+                      placeholder={searchPlaceholder}
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                    />
+                  </InputGroup>
 
-                <VStack
-                  w="full"
-                  spacing="0"
-                  py="3"
-                  px="1"
-                  align="flex-start"
-                  maxH="250px"
-                  overflow="auto"
-                  className="custom__scroll"
-                >
-                  <If condition={!pagedOptions.length}>
-                    <Then>
-                      <Text w="full" textAlign="center">
-                        No options
-                      </Text>
-                    </Then>
-                    <Else>
-                      {pagedOptions.map((opt, i) => (
-                        <Button
-                          key={i}
-                          onClick={() => {
-                            if (value?.value === opt.value) return;
-                            onChange(opt);
-                            onClose();
-                            setSearchValue('');
-                          }}
-                          isDisabled={value?.value === opt.value}
-                          w="full"
-                          py="5"
-                          px="2"
-                          display="flex"
-                          flexDir="row"
-                          alignItems="center"
-                          justifyContent="flex-start"
-                          gap="16px"
-                          variant="unstyled"
-                          rounded="none"
-                          transition="all 0.2s"
-                          _hover={{
-                            bg: 'gray.50',
-                          }}
-                          _active={{
-                            bg: 'gray.100',
-                          }}
-                          _notLast={{
-                            borderBottom: '1px solid #F0F0F0',
-                          }}
-                        >
-                          <If condition={!!opt.iconUrl}>
-                            <Then>
-                              <Image
-                                src={opt.iconUrl}
-                                rounded="full"
-                                w="20px"
-                                h="20px"
-                              />
-                            </Then>
-                          </If>
-                          <Text fontSize="14px" fontWeight="400">
-                            {opt.label}
-                          </Text>
-                        </Button>
-                      ))}
-                    </Else>
-                  </If>
+                  <VStack
+                    w="full"
+                    spacing="0"
+                    py="3"
+                    px="1"
+                    align="flex-start"
+                    maxH="250px"
+                    overflow="auto"
+                    className="custom__scroll"
+                  >
+                    <If condition={!pagedOptions.length}>
+                      <Then>
+                        <Text w="full" textAlign="center">
+                          No options
+                        </Text>
+                      </Then>
+                      <Else>
+                        {pagedOptions.map((opt, i) => (
+                          <Button
+                            key={i}
+                            onClick={() => {
+                              if (value?.value === opt.value) return;
+                              onChange(opt);
+                              onClose();
+                              setSearchValue('');
+                            }}
+                            isDisabled={value?.value === opt.value}
+                            w="full"
+                            py="5"
+                            px="2"
+                            display="flex"
+                            flexDir="row"
+                            alignItems="center"
+                            justifyContent="flex-start"
+                            gap="16px"
+                            variant="unstyled"
+                            rounded="none"
+                            transition="all 0.2s"
+                            _hover={{
+                              bg: 'gray.50',
+                            }}
+                            _active={{
+                              bg: 'gray.100',
+                            }}
+                            _notLast={{
+                              borderBottom: '1px solid #F0F0F0',
+                            }}
+                          >
+                            <If condition={!!opt.iconUrl}>
+                              <Then>
+                                <Image
+                                  src={opt.iconUrl}
+                                  rounded="full"
+                                  w="20px"
+                                  h="20px"
+                                />
+                              </Then>
+                            </If>
+                            <Text fontSize="14px" fontWeight="400">
+                              {opt.label}
+                            </Text>
+                          </Button>
+                        ))}
+                      </Else>
+                    </If>
+                  </VStack>
+
+                  <HStack justify="center" align="center" w="full">
+                    <ButtonGroup size="sm" isAttached variant="outline">
+                      <Button
+                        fontWeight="400"
+                        fontSize="sm"
+                        minW="82px"
+                        onClick={onPrev}
+                        isDisabled={page <= 0}
+                      >
+                        Previous
+                      </Button>
+                      <Button
+                        fontWeight="400"
+                        fontSize="sm"
+                        minW="82px"
+                        onClick={onNext}
+                        isDisabled={
+                          page + 1 >=
+                          Math.ceil(filterdOptions.length / PAGE_SIZE)
+                        }
+                      >
+                        Next
+                      </Button>
+                    </ButtonGroup>
+                  </HStack>
                 </VStack>
-
-                <HStack justify="center" align="center" w="full">
-                  <ButtonGroup size="sm" isAttached variant="outline">
-                    <Button
-                      fontWeight="400"
-                      fontSize="sm"
-                      minW="82px"
-                      onClick={onPrev}
-                      isDisabled={page <= 0}
-                    >
-                      Previous
-                    </Button>
-                    <Button
-                      fontWeight="400"
-                      fontSize="sm"
-                      minW="82px"
-                      onClick={onNext}
-                      isDisabled={
-                        page + 1 >= Math.ceil(filterdOptions.length / PAGE_SIZE)
-                      }
-                    >
-                      Next
-                    </Button>
-                  </ButtonGroup>
-                </HStack>
-              </VStack>
-            </PopoverBody>
-          </PopoverContent>
+              </PopoverBody>
+            </PopoverContent>
+          </Portal>
         </>
       )}
     </Popover>

@@ -11,6 +11,7 @@ import { APP_FONT } from '@/constants';
 import colors from './colors';
 import { inputStyles, textAreaStyles } from './inputs';
 import modalStyles from './overlays';
+import { popoverTheme } from './popper';
 
 const fonts = {
   heading: `'${APP_FONT.headers}', ${baseTheme.fonts.body}`,
@@ -36,6 +37,7 @@ const components: ThemeComponents = {
   Select: inputStyles,
   Textarea: textAreaStyles,
   Modal: modalStyles,
+  Popover: popoverTheme,
 };
 
 const chakraTheme = extendTheme(

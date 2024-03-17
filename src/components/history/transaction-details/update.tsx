@@ -19,10 +19,10 @@ export default function Update({ transaction }: Props) {
       >
         <VStack align="flex-start" spacing="0" color="#6A7891">
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'E do,')}
+            {format(new Date(transaction.created_at), 'E do,')}
           </Text>
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'MMM yyyy')}
+            {format(new Date(transaction.created_at), 'MMM yyyy')}
           </Text>
         </VStack>
         <VStack h="100px" minH="fit-content" spacing="0">
@@ -47,10 +47,10 @@ export default function Update({ transaction }: Props) {
       >
         <VStack align="flex-start" spacing="0" color="#6A7891">
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'E do,')}
+            {format(new Date(transaction.created_at), 'E do,')}
           </Text>
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'MMM yyyy')}
+            {format(new Date(transaction.created_at), 'MMM yyyy')}
           </Text>
         </VStack>
         <VStack h="100px" minH="fit-content" spacing="0">
@@ -75,10 +75,10 @@ export default function Update({ transaction }: Props) {
       >
         <VStack align="flex-start" spacing="0" color="#6A7891">
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'E do,')}
+            {format(new Date(transaction.created_at), 'E do,')}
           </Text>
           <Text fontSize="14px" fontWeight="400">
-            {format(new Date(transaction.date), 'MMM yyyy')}
+            {format(new Date(transaction.created_at), 'MMM yyyy')}
           </Text>
         </VStack>
         <VStack h="100px" minH="fit-content" spacing="0">

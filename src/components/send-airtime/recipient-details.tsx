@@ -57,11 +57,11 @@ export default function RecipientDetails() {
           fontWeight="700"
           textAlign="center"
         >
-          Send airtime globally
+          Send airtime today
         </Heading>
 
         <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">
-          Send airtime to anybody anywhere
+          Send airtime to family and friends globally
         </Heading>
 
         <VStack

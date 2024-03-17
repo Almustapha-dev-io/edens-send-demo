@@ -4,16 +4,6 @@ type TCustomSelectItem<T> = {
   value: T;
 };
 
-type TTransaction = {
-  date: string;
-  id: string;
-  type: string;
-  beneficiary: string;
-  beneficiaryNumber: string;
-  amount: number;
-  status: string;
-};
-
 type TServerResponse<T extends object> = {
   code: number;
   message: string;
@@ -67,3 +57,47 @@ type TVerifyBankBeneficiaryDTO = {
 type VerifyBeneficiaryDTO =
   | TVerifyWalletBeneficiaryDTO
   | TVerifyBankBeneficiaryDTO;
+
+type TTransaction = {
+  eden_send_client_id: string;
+  reference: string;
+  amount: string;
+  fee: string;
+  beneficiary_account_number: string;
+  beneficiary_name: string;
+  beneficiary_email: string;
+  narration: string;
+  status: string;
+  progress_report: string;
+  created_at: string;
+  updated_at: string;
+  beneficiary_type: string;
+  beneficiary_bank_code: string;
+  beneficiary_wallet_name: string;
+  bill_id: string | null;
+  operator_id: string | null;
+  product_id: string | null;
+  bill_provider_id: string | null;
+  beneficiary_phone_number: string | null;
+  type: string;
+  sender_country: string;
+  source_of_funds: string;
+  purpose_of_transfer: string;
+  relation_with_beneficiary: string;
+};
+
+type InitiateSendTransactionDTO = {
+  amount: number;
+  beneficiary_type: string;
+  bank_code?: string;
+  wallet_name?: string;
+  fx_quotation_id: string;
+  beneficiary_account_number: string;
+  beneficiary_name?: string;
+  beneficiary_email?: string;
+  narration: string;
+  sender_country: string;
+  source_of_funds: string;
+  purpose_of_transfer: string;
+  relation_with_beneficiary: string;
+};

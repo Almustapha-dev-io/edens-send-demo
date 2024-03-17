@@ -4,13 +4,14 @@ import { apiBaseUrl } from '@/lib/env';
 
 import getBaseQueryWithLogout from '../../base-query';
 import apiTagTypes from './api-tag-types';
-import { getSendMoneyEndpoints } from './builders';
+import { getSendMoneyEndpoints, getTransactionsEndpoints } from './builders';
 
 const apiSlice = createApi({
   baseQuery: getBaseQueryWithLogout(apiBaseUrl),
   tagTypes: apiTagTypes,
   endpoints: (build) => ({
     ...getSendMoneyEndpoints(build),
+    ...getTransactionsEndpoints(build),
   }),
 });
 
@@ -21,4 +22,9 @@ export const {
   useCreateTransactionParamsMutation,
   useVerifyBeneficiaryMutation,
   useCheckEdensClientMutation,
+  useGetTransactionQuery,
+  useGetTransactionsQuery,
+  useLazyGetTransactionQuery,
+  useLazyGetTransactionsQuery,
+  useInitiateSendMoneyMutation,
 } = apiSlice;

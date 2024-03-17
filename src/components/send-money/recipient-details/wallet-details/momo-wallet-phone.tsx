@@ -14,6 +14,7 @@ import { Case, If, Switch, Then } from 'react-if';
 import { useDebounceValue } from 'usehooks-ts';
 
 import CheckCircleIcon from '@/components/icons/check-circle-icon';
+import CrossCircleIcon from '@/components/icons/cross-circle-icon';
 import PhoneNumberInput from '@/components/ui/phone-number-input';
 import { useVerifyBeneficiary } from '@/hooks/send-money';
 import { useAppSelector } from '@/lib/redux';
@@ -101,7 +102,7 @@ export default function MomoWalletPhone({ control, isVerified }: Props) {
               <Case condition={!isLoading}>
                 <If condition={isError}>
                   <Then>
-                    <div>Err</div>
+                    <CrossCircleIcon width="16px" height="16px" />
                   </Then>
                 </If>
                 <If condition={isSuccess}>

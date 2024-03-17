@@ -6,36 +6,63 @@ import {
   useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
+import { useCallback, useEffect } from 'react';
 import { Else, If, Then } from 'react-if';
+import { useParams } from 'react-router-dom';
 
 import BackButton from '@/components/ui/back-button';
+import ErrorPlaceholder from '@/components/ui/error-placeholder';
+import { Loader } from '@/components/ui/loader';
+import NoData from '@/components/ui/no-data';
 import RouterLink from '@/components/ui/router-link';
 import { HISTORY_ROUTE, LOGIN } from '@/constants';
 import { useIsAuthenticated } from '@/hooks';
+import { useLazyGetTransactionQuery } from '@/lib/redux';
 
 import TransactionStatus from '../transactions/transaction-status';
 import TransactionDetailsLg from './transaction-details-lg';
 import TransactionDetailsSm from './transaction-details-sm';
 
-const dummyTr: TTransaction = {
-  amount: 1000,
-  beneficiary: 'William Doe',
-  beneficiaryNumber: 'Edens360 | 753627282',
-  date: new Date().toISOString(),
-  id: 'mmmudsuduhs1',
-  status: 'Pending',
-  type: 'Money Transfer',
-};
-
 export default function TransactionDetails() {
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
   const isAuth = useIsAuthenticated();
 
-  let content = <></>;
-  if (isSmallScreen && isAuth) {
-    content = <TransactionDetailsSm transaction={dummyTr} />;
-  } else {
-    content = <TransactionDetailsLg transaction={dummyTr} />;
+  const { id } = useParams();
+  const [getTransactionQuery, { isFetching, isError, isLoading, data }] =
+    useLazyGetTransactionQuery();
+
+  const getTransaction = useCallback(() => {
+    if (!id) return;
+    getTransactionQuery(id);
+  }, [getTransactionQuery, id]);
+
+  useEffect(() => {
+    if (isAuth) {
+      getTransaction();
+    }
+  }, [getTransaction, isAuth]);
+
+  if (isAuth && isLoading)
+    return (
+      <Center w="full" py="6" minH="250px">
+        <Loader />
+      </Center>
+    );
+
+  if (isAuth && isError) {
+    return (
+      <ErrorPlaceholder retryHandler={getTransaction} isLoading={isFetching} />
+    );
+  }
+
+  if ((isError || !data) && isAuth) {
+    return (
+      <NoData
+        label="No transaction found!"
+        retryHandler={getTransaction}
+        isLoading={isFetching}
+      />
+    );
   }
 
   return (
@@ -55,11 +82,29 @@ export default function TransactionDetails() {
           Transaction details
         </Heading>
 
-        {isAuth && <TransactionStatus status={dummyTr.status} />}
+        <If condition={isAuth}>
+          <Then>
+            {!!data && <TransactionStatus status={data.transaction.status} />}
+          </Then>
+        </If>
       </Stack>
 
       <If condition={isAuth}>
-        <Then>{content}</Then>
+        <Then>
+          <If condition={isSmallScreen}>
+            <Then>
+              {!!data && (
+                <TransactionDetailsSm transaction={data.transaction} />
+              )}
+            </Then>
+            <Else>
+              {!!data && (
+                <TransactionDetailsLg transaction={data.transaction} />
+              )}
+            </Else>
+          </If>
+        </Then>
+
         <Else>
           <Center w="full" minH="250px">
             <VStack spacing="4">

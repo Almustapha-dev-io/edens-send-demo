@@ -105,6 +105,7 @@ export default function BankDetails() {
               onChange={field.onChange}
               options={banks}
               placeholder="Choose Bank"
+              searchPlaceholder="Search through available banks"
             />
             <FormErrorMessage mt="2">
               {fieldState.error?.message}

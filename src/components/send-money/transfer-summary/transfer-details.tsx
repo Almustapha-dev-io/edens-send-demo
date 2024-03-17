@@ -1,12 +1,15 @@
 import { Button, Heading, HStack, VStack } from '@chakra-ui/react';
 import { useMemo } from 'react';
 
+import { useSendMoneyContext } from '@/context/send-money';
 import { formatPrice } from '@/lib/helpers';
 import { useAppSelector } from '@/lib/redux';
+import { SendMoneyPageState } from '@/types/enums';
 
 import SummaryItem from './summary-item';
 
 export default function TransferDetails() {
+  const { setPage } = useSendMoneyContext();
   const { amount, transactionParams, recipientDetails, recipientName } =
     useAppSelector((s) => s.transactionParams.sendMoney);
 
@@ -32,16 +35,6 @@ export default function TransferDetails() {
     return '';
   };
 
-  const getAmount = () => {
-    if (!amount) return formatPrice(0, { fractionDigits: 2 });
-    const parsedAmount = +amount;
-    if (isNaN(parsedAmount) || !isFinite(parsedAmount)) {
-      return formatPrice(0, { fractionDigits: 2 });
-    }
-
-    return formatPrice(parsedAmount, { fractionDigits: 2 });
-  };
-
   const recipientValue = useMemo(() => {
     if (!transactionParams) return formatPrice(0, { fractionDigits: 2 });
     if (!amount) return formatPrice(0, { fractionDigits: 2 });
@@ -60,6 +53,20 @@ export default function TransferDetails() {
     return formatPrice(parsedAmount * transactionParams.exchangeRate, params);
   }, [amount, transactionParams]);
 
+  const totalAmount = useMemo(() => {
+    if (!transactionParams || !amount)
+      return formatPrice(0, { fractionDigits: 2 });
+
+    const parsedAmount = +amount;
+    if (!isFinite(parsedAmount) || isNaN(parsedAmount))
+      return formatPrice(0, { fractionDigits: 2 });
+
+    const total = parsedAmount + transactionParams.fee;
+    return formatPrice(total, {
+      fractionDigits: 2,
+    });
+  }, [amount, transactionParams]);
+
   return (
     <VStack w="full" align="flex-start">
       <Heading fontWeight="700" fontSize="16px">
@@ -71,7 +78,7 @@ export default function TransferDetails() {
           label="You send exactly"
           content={
             <HStack w="full" justify="space-between">
-              <span>{getAmount()}</span>
+              <span>{totalAmount}</span>
 
               <Button
                 size="sm"
@@ -82,6 +89,7 @@ export default function TransferDetails() {
                 _hover={{
                   bg: 'primary.50',
                 }}
+                onClick={() => setPage(SendMoneyPageState.FORM)}
               >
                 Change
               </Button>

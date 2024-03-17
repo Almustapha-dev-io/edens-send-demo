@@ -16,7 +16,7 @@ import ErrorPlaceholder from '@/components/ui/error-placeholder';
 import { Loader } from '@/components/ui/loader';
 import NoData from '@/components/ui/no-data';
 import { TRANSACTION_DETAILS } from '@/constants';
-import { formatPrice } from '@/lib/helpers';
+import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
 import TransactionStatus from './transaction-status';
 import TransactionType from './transaction-type';
@@ -30,7 +30,7 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
       w="full"
       h="fit-content"
       display="block"
-      onClick={() => navigate(TRANSACTION_DETAILS(transaction.id))}
+      onClick={() => navigate(TRANSACTION_DETAILS(transaction.reference))}
     >
       <VStack
         w="full"
@@ -40,7 +40,7 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
         spacing="4"
         align="flex-start"
       >
-        <TransactionType type={transaction.type} />
+        <TransactionType type={snakeToFlat(transaction.type).toLowerCase()} />
 
         <HStack w="full" justify="space-between" spacing="6">
           <VStack
@@ -60,10 +60,10 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               Time
             </Heading>
             <Text fontWeight="400" fontSize="14px">
-              {format(new Date(transaction.date), 'do MMMM yyyy')}
+              {format(new Date(transaction.created_at), 'do MMMM yyyy')}
             </Text>
             <Text fontWeight="400" fontSize="14px" color="#979797">
-              {format(new Date(transaction.date), 'h:m:saaa')}
+              {format(new Date(transaction.created_at), 'h:m:saaa')}
             </Text>
           </VStack>
 
@@ -85,7 +85,7 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               Beneficiary
             </Heading>
             <Text fontWeight="400" fontSize="14px" textAlign="end">
-              {transaction.beneficiary}
+              {transaction.beneficiary_name}
             </Text>
             <Text
               fontWeight="400"
@@ -93,7 +93,11 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               color="#979797"
               textAlign="end"
             >
-              {transaction.beneficiaryNumber}
+              {transaction.beneficiary_account_number} |{' '}
+              {snakeToFlat(
+                transaction.beneficiary_wallet_name ??
+                  transaction.beneficiary_type
+              )}
             </Text>
           </VStack>
         </HStack>
@@ -112,7 +116,12 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               Amount
             </Heading>
             <Text fontWeight="400" fontSize="14px">
-              {formatPrice(transaction.amount, { fractionDigits: 2 })}
+              {formatPrice(
+                isFinite(+transaction.amount) && !isNaN(+transaction.amount)
+                  ? +transaction.amount / 100
+                  : 0,
+                { fractionDigits: 2 }
+              )}
             </Text>
           </VStack>
 
@@ -126,13 +135,14 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
 type Props = {
   transactions: TTransaction[];
   isLoading?: boolean;
-
   isError?: boolean;
+  refetch?(): void;
 };
 export default function TransactionsTableSm({
   transactions,
   isError,
   isLoading,
+  refetch,
 }: Props) {
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -153,11 +163,11 @@ export default function TransactionsTableSm({
     );
 
   if (isError) {
-    return <ErrorPlaceholder />;
+    return <ErrorPlaceholder retryHandler={refetch} />;
   }
 
   if (!transactions.length) {
-    return <NoData label="No transactions found!" />;
+    return <NoData label="No transactions found!" retryHandler={refetch} />;
   }
 
   return (
@@ -174,8 +184,8 @@ export default function TransactionsTableSm({
         toFirstPage={toFirstPage}
         toLastPage={toLastPage}
         totalItems={transactions.length}
-        totalPages={2}
-        canNext={page < transactions.length - 1}
+        totalPages={Math.ceil(transactions.length / 10)}
+        canNext={page + 1 < Math.ceil(transactions.length / 10)}
         canPrev={page > 0}
       />
     </VStack>

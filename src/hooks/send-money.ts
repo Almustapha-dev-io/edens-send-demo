@@ -6,6 +6,7 @@ import {
   useAppSelector,
   useCheckEdensClientMutation,
   useCreateTransactionParamsMutation,
+  useInitiateSendMoneyMutation,
   useVerifyBeneficiaryMutation,
 } from '@/lib/redux';
 
@@ -118,6 +119,35 @@ export function useCheckEdensSendClient({
 
   return Object.freeze({
     checkClientMutation,
+    ...params,
+  });
+}
+
+export function useInitiateSendMoney({
+  hideSuccessMsg = false,
+  hideErrorMsg = false,
+}: TQueryArgs = {}) {
+  const [initiateSendMoneyMutation, params] = useInitiateSendMoneyMutation();
+
+  useEffect(() => {
+    if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
+      toast('Transaction created', { type: 'success' });
+    }
+  }, [
+    hideSuccessMsg,
+    params.data?.message,
+    params.isLoading,
+    params.isSuccess,
+  ]);
+
+  useEffect(() => {
+    if (!hideErrorMsg && !params.isLoading && params.isError && params.error) {
+      handleServerError(params.error);
+    }
+  }, [hideErrorMsg, params.error, params.isError, params.isLoading]);
+
+  return Object.freeze({
+    initiateSendMoneyMutation,
     ...params,
   });
 }

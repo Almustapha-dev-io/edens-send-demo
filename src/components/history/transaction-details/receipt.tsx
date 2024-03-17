@@ -1,7 +1,7 @@
 import { Box, Button, Heading, VStack } from '@chakra-ui/react';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
-import { formatPrice } from '@/lib/helpers';
+import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
 type SummaryItemProps = {
   label: string;
@@ -33,6 +33,21 @@ type Props = {
 };
 
 export default function Receipt({ transaction }: Props) {
+  const amount = useMemo(
+    () =>
+      isFinite(+transaction.amount) && !isNaN(+transaction.amount)
+        ? +transaction.amount / 100
+        : 0,
+    [transaction.amount]
+  );
+
+  const fee = useMemo(
+    () =>
+      isFinite(+transaction.fee) && !isNaN(+transaction.fee)
+        ? +transaction.fee / 100
+        : 0,
+    [transaction.fee]
+  );
   return (
     <VStack w="full" h="fit-content" spacing="8">
       <VStack w="full" spacing="6" align="flex-start">
@@ -41,9 +56,18 @@ export default function Receipt({ transaction }: Props) {
         </Heading>
 
         <VStack w="full" spacing="0">
-          <SummaryItem label="Account Number" content="8562819410 | MoMo" />
-          <SummaryItem label="Account Name" content=" Willaim Brown" />
-          <SummaryItem label="Email Address" content="brandonw456@gmail.com" />
+          <SummaryItem
+            label="Account Number"
+            content={`${transaction.beneficiary_name} | ${snakeToFlat(transaction.beneficiary_wallet_name ?? transaction.beneficiary_type)}`}
+          />
+          <SummaryItem
+            label="Account Name"
+            content={transaction.beneficiary_name ?? '-'}
+          />
+          <SummaryItem
+            label="Email Address"
+            content={transaction.beneficiary_email ?? '-'}
+          />
         </VStack>
       </VStack>
 
@@ -55,12 +79,19 @@ export default function Receipt({ transaction }: Props) {
         <VStack w="full" spacing="0">
           <SummaryItem
             label="You send exactly"
-            content={formatPrice(transaction.amount, { fractionDigits: 2 })}
+            content={formatPrice(amount + fee, {
+              fractionDigits: 2,
+            })}
           />
-          <SummaryItem label="Total fees" content="$0.00" />
+          <SummaryItem
+            label="Total fees"
+            content={formatPrice(fee, {
+              fractionDigits: 2,
+            })}
+          />
           <SummaryItem
             label="Brandon Wesley gets"
-            content={formatPrice(transaction.amount, { fractionDigits: 2 })}
+            content={formatPrice(amount, { fractionDigits: 2 })}
           />
         </VStack>
       </VStack>

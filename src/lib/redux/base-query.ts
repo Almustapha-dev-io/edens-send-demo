@@ -30,12 +30,13 @@ const getBaseQueryWithLogout = (baseUrl: string) => {
     unknown,
     FetchBaseQueryError
   > = async (args, api, extraOptions) => {
-    const result = await baseQuery(args, api, extraOptions);
+    const result = await baseQuery(args, api, (extraOptions = {}));
     const ignoreLogout =
       'ignoreLogout' in extraOptions &&
       typeof extraOptions.ignoreLogout === 'boolean' &&
       extraOptions.ignoreLogout;
 
+    console.log(result.error && result.error.status === 401 && !ignoreLogout);
     if (result.error && result.error.status === 401 && !ignoreLogout) {
       toast('Your session expired!', {
         type: 'error',

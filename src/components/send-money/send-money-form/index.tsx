@@ -47,7 +47,16 @@ import {
 import AmountInput from './amount-input';
 import StatLabel from './stat-label';
 
-const COUNTRIES = ['LR', 'NG'];
+const COUNTRIES = [
+  {
+    label: 'LIB',
+    value: 'LR',
+  },
+  {
+    label: 'NGN',
+    value: 'NG',
+  },
+];
 const COUNTRIES_FLAGS: Record<string, ReactNode> = {
   LR: <LrFlagIcon width="24px" height="24px" style={{ flexShrink: 0 }} />,
   NG: <NgFlagIcon width="24px" height="24px" style={{ flexShrink: 0 }} />,
@@ -186,7 +195,7 @@ export default function SendMoneyForm() {
         </Heading>
 
         <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">
-          Pay any Edens360 or MTN momo wallet instantly
+          Send money internationally to bank accounts and mobile money wallets.
         </Heading>
 
         <VStack
@@ -236,14 +245,16 @@ export default function SendMoneyForm() {
               )}
             />
             <StatLabel
-              icon={<EqualsIcon />}
-              label="Total amount to pay (Amount + Fee)"
-              value={totalAmount}
-            />
-            <StatLabel
               icon={<ExchangeIcon />}
               label="Exchange rate"
               value={exchangeRate}
+            />
+            <StatLabel
+              icon={<EqualsIcon />}
+              label={
+                <Text fontWeight="700">Total amount to pay (Amount + Fee)</Text>
+              }
+              value={totalAmount}
             />
           </VStack>
 
@@ -290,7 +301,7 @@ export default function SendMoneyForm() {
                   onChange={(e) => setCountry(e.target.value)}
                 >
                   {COUNTRIES.map((c) => (
-                    <option value={c}>{c}</option>
+                    <option value={c.value}>{c.label}</option>
                   ))}
                 </Select>
               </HStack>

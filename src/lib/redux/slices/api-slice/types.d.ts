@@ -12,7 +12,10 @@ import {
   QueryActionCreatorResult,
 } from '@reduxjs/toolkit/query';
 
-export type TApiTag = 'CREATE_SEND_TRANSACTION_PARAMS';
+export type TApiTag =
+  | 'CREATE_SEND_TRANSACTION_PARAMS'
+  | 'TRANSACTION'
+  | 'TRANSACTIONS';
 
 export type TAppEndpointBuilder = EndpointBuilder<
   BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,

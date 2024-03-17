@@ -4,6 +4,10 @@ export function camelToFlat(str: string) {
   return camelCase.toLowerCase();
 }
 
+export function snakeToFlat(str: string) {
+  return str.split('_').join(' ');
+}
+
 function capitalizeString(s: string) {
   return `${s.charAt(0).toUpperCase()}${s.substring(1).toLowerCase()}`;
 }

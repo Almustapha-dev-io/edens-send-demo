@@ -37,3 +37,7 @@
 .custom__scroll::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.custom-select__popover {
+  z-index: 25 !important;
+}

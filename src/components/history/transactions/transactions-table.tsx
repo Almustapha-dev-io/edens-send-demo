@@ -7,6 +7,7 @@ type Props = {
   transactions: TTransaction[];
   isLoading?: boolean;
   isError?: boolean;
+  refetch?(): void;
 };
 
 export default function TransactionsTable(props: Props) {

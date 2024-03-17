@@ -9,125 +9,81 @@ import {
   Tabs,
   VStack,
 } from '@chakra-ui/react';
+import { useMemo } from 'react';
 import { Else, If, Then } from 'react-if';
 
 import RouterLink from '@/components/ui/router-link';
 import { LOGIN } from '@/constants';
 import { useIsAuthenticated } from '@/hooks';
+import { useGetTransactionsQuery } from '@/lib/redux';
 
 import TransactionsTable from './transactions-table';
 
-const transactions: TTransaction[] = [
-  {
-    amount: 1000,
-    beneficiary: 'William Doe',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'mmmudsuduhs1',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 2000,
-    beneficiary: 'William Doe',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'mmmuddksd323suduhs2',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-  {
-    amount: 1500,
-    beneficiary: 'John Smith',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'mslwsd323suduhs3',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 3000,
-    beneficiary: 'John Smith',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'mslwsd323sud12uhs4',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-  {
-    amount: 1200,
-    beneficiary: 'Jane Doe',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'mssud323suduhs5',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 2500,
-    beneficiary: 'Jane Doe',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'mssud33suduhs6',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-  {
-    amount: 800,
-    beneficiary: 'Alice Smith',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'mud323suduhs7',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 1800,
-    beneficiary: 'Alice Smith',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'mssud33suduhs8',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-  {
-    amount: 1600,
-    beneficiary: 'Bob Brown',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'msudsuduhs9',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 2800,
-    beneficiary: 'Bob Brown',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'msudssuduhs10',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-  {
-    amount: 1600,
-    beneficiary: 'Bob Brown',
-    beneficiaryNumber: 'Edens360 | 753627282',
-    date: new Date().toISOString(),
-    id: 'msudsuduhs11',
-    status: 'Pending',
-    type: 'Money Transfer',
-  },
-  {
-    amount: 2800,
-    beneficiary: 'Bob Brown',
-    beneficiaryNumber: '+2339283933',
-    date: new Date().toISOString(),
-    id: 'msudssuduhs12',
-    status: 'Completed',
-    type: 'Airtime Transfer',
-  },
-];
 const items = ['All', 'Money', 'Airtime'];
+
+function TransactionsList() {
+  const { isError, isFetching, data, refetch } = useGetTransactionsQuery();
+
+  const cashTransactions = useMemo(() => {
+    if (!data) return [];
+    return data.transactions.filter((t) => t.type === 'CASH_TRANSFER');
+  }, [data]);
+
+  const airtimeTransactions = useMemo(() => {
+    if (!data) return [];
+    return data.transactions.filter((t) => t.type !== 'CASH_TRANSFER');
+  }, [data]);
+
+  return (
+    <Tabs w="full" variant="soft-rounded" colorScheme="green">
+      <TabList w="full" gap="10px" flexWrap="wrap">
+        {items.map((it) => (
+          <Tab
+            key={it}
+            minW="97px"
+            border="1px solid #C3CCD6"
+            fontWeight="400"
+            fontSize="14px"
+            _selected={{
+              bg: 'primary.500',
+              color: '#fff',
+              border: 'none',
+            }}
+          >
+            {it}
+          </Tab>
+        ))}
+      </TabList>
+
+      <TabPanels mt="50px" p="0">
+        <TabPanel p="0">
+          <TransactionsTable
+            isError={isError}
+            isLoading={isFetching}
+            refetch={refetch}
+            transactions={data?.transactions ?? []}
+          />
+        </TabPanel>
+        <TabPanel p="0">
+          <TransactionsTable
+            isError={isError}
+            isLoading={isFetching}
+            refetch={refetch}
+            transactions={cashTransactions}
+          />
+        </TabPanel>
+        <TabPanel p="0">
+          <TransactionsTable
+            isError={isError}
+            isLoading={isFetching}
+            refetch={refetch}
+            transactions={airtimeTransactions}
+          />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
+  );
+}
 
 export default function Transactions() {
   const isAuth = useIsAuthenticated();
@@ -140,38 +96,7 @@ export default function Transactions() {
 
       <If condition={isAuth}>
         <Then>
-          <Tabs w="full" variant="soft-rounded" colorScheme="green">
-            <TabList w="full" gap="10px" flexWrap="wrap">
-              {items.map((it) => (
-                <Tab
-                  key={it}
-                  minW="97px"
-                  border="1px solid #C3CCD6"
-                  fontWeight="400"
-                  fontSize="14px"
-                  _selected={{
-                    bg: 'primary.500',
-                    color: '#fff',
-                    border: 'none',
-                  }}
-                >
-                  {it}
-                </Tab>
-              ))}
-            </TabList>
-
-            <TabPanels mt="50px" p="0">
-              <TabPanel p="0">
-                <TransactionsTable transactions={transactions} />
-              </TabPanel>
-              <TabPanel p="0">
-                <TransactionsTable transactions={transactions} />
-              </TabPanel>
-              <TabPanel p="0">
-                <TransactionsTable transactions={transactions} />
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
+          <TransactionsList />
         </Then>
 
         <Else>
