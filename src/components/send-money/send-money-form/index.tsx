@@ -201,7 +201,7 @@ export default function SendMoneyForm() {
             <Then>
               <br />
               <chakra.span color="#92CCBF">
-                from {data?.country_name ?? ''}
+                from {data?.location.native_name ?? ''}
                 <Image
                   ml="2"
                   src={FLAG_URL(data?.country_code.toLowerCase() ?? '')}
