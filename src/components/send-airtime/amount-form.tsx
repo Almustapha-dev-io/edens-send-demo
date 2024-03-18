@@ -47,7 +47,9 @@ const BUTTONS = [
 
 export default function AmountForm() {
   const dispatch = useAppDispatch();
-  const { amount } = useAppSelector((s) => s.transactionParams.sendAirtime);
+  const { amount, recipientDetails } = useAppSelector(
+    (s) => s.transactionParams.sendAirtime
+  );
 
   const [value, setValue] = useState(() => amount?.toString() ?? '0');
   const shouldValidate = useRef(false);
@@ -120,7 +122,7 @@ export default function AmountForm() {
         fontWeight="700"
         textAlign="center"
       >
-        How much are you sending to +233 837 376 338? {isValid + ''}
+        How much are you sending to {recipientDetails?.phoneNumber ?? '-'}?
       </Heading>
 
       <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">

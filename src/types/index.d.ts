@@ -63,27 +63,27 @@ type TTransaction = {
   reference: string;
   amount: string;
   fee: string;
-  beneficiary_account_number: string;
-  beneficiary_name: string;
-  beneficiary_email: string;
+  beneficiary_account_number: string | null;
+  beneficiary_name: string | null;
+  beneficiary_email: string | null;
   narration: string;
   status: string;
   progress_report: string;
   created_at: string;
   updated_at: string;
-  beneficiary_type: string;
-  beneficiary_bank_code: string;
-  beneficiary_wallet_name: string;
+  beneficiary_type: string | null;
+  beneficiary_bank_code: string | null;
+  beneficiary_wallet_name: string | null;
   bill_id: string | null;
   operator_id: string | null;
   product_id: string | null;
   bill_provider_id: string | null;
   beneficiary_phone_number: string | null;
   type: string;
-  sender_country: string;
-  source_of_funds: string;
-  purpose_of_transfer: string;
-  relation_with_beneficiary: string;
+  sender_country: string | null;
+  source_of_funds: string | null;
+  purpose_of_transfer: string | null;
+  relation_with_beneficiary: string | null;
 };
 
 type InitiateSendTransactionDTO = {

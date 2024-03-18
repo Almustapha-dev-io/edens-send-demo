@@ -6,6 +6,7 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
+  Image,
   Input,
   VStack,
 } from '@chakra-ui/react';
@@ -13,10 +14,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { codes } from 'country-calling-code';
 import { useEffect, useMemo, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { If, Then } from 'react-if';
 
-import { CARD_SHADOW } from '@/constants';
+import { CARD_SHADOW, FLAG_URL } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
-import { useOnMount } from '@/hooks';
+import { useGetUserLocation, useOnMount } from '@/hooks';
 import {
   setSendAirtimeRecipientDetails,
   useAppDispatch,
@@ -76,6 +78,8 @@ export default function RecipientDetails() {
     }));
   }, [countriesRes]);
 
+  const { isSuccess, data } = useGetUserLocation();
+
   useOnMount(() => {
     if (recipientDetails) {
       setValue('country', recipientDetails.country, {
@@ -130,7 +134,22 @@ export default function RecipientDetails() {
           fontWeight="700"
           textAlign="center"
         >
-          Send airtime today
+          Send Airtime Globally
+          <If condition={isSuccess && !!data}>
+            <Then>
+              <br />
+              <chakra.span color="#92CCBF">
+                from {data?.country_name ?? ''}
+                <Image
+                  ml="2"
+                  src={FLAG_URL(data?.country_code.toLowerCase() ?? '')}
+                  w="32px"
+                  h={{ base: '20px', md: '24px' }}
+                  display="inline"
+                />
+              </chakra.span>
+            </Then>
+          </If>
         </Heading>
 
         <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">

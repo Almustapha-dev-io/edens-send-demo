@@ -103,7 +103,7 @@ export default function TransferDetails() {
           })}
         />
         <SummaryItem
-          label={`${getRecipientName()} gets`}
+          label={`${getRecipientName() ?? 'Recipient'} gets`}
           content={recipientValue}
         />
       </VStack>

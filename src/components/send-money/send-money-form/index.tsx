@@ -6,6 +6,7 @@ import {
   FormLabel,
   Heading,
   HStack,
+  Image,
   Select,
   Text,
   VStack,
@@ -20,6 +21,7 @@ import {
   useState,
 } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { If, Then } from 'react-if';
 import { toast } from 'react-toastify';
 import { useDebounceValue } from 'usehooks-ts';
 
@@ -27,9 +29,10 @@ import EqualsIcon from '@/components/icons/equals-icon';
 import ExchangeIcon from '@/components/icons/exchange-icon';
 import LrFlagIcon from '@/components/icons/lr-flag-icon';
 import NgFlagIcon from '@/components/icons/ng-flag-icon';
-import RemoveIcon from '@/components/icons/remove-icon';
-import { CARD_SHADOW } from '@/constants';
+import PlusIcon from '@/components/icons/plus-icon';
+import { CARD_SHADOW, FLAG_URL } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
+import { useGetUserLocation } from '@/hooks';
 import { useCreateTransactionsParams } from '@/hooks/send-money';
 import { formatNumber, formatPrice } from '@/lib/helpers';
 import {
@@ -132,6 +135,8 @@ export default function SendMoneyForm() {
 
   const allowReset = useRef(false);
 
+  const { isSuccess, data } = useGetUserLocation();
+
   useEffect(() => {
     if (allowReset.current) {
       dispatch(resetSendMoney());
@@ -191,7 +196,22 @@ export default function SendMoneyForm() {
           fontWeight="700"
           textAlign="center"
         >
-          Send money today
+          Send Money Globally
+          <If condition={isSuccess && !!data}>
+            <Then>
+              <br />
+              <chakra.span color="#92CCBF">
+                from {data?.country_name ?? ''}
+                <Image
+                  ml="2"
+                  src={FLAG_URL(data?.country_code.toLowerCase() ?? '')}
+                  w="32px"
+                  h={{ base: '20px', md: '24px' }}
+                  display="inline"
+                />
+              </chakra.span>
+            </Then>
+          </If>
         </Heading>
 
         <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">
@@ -237,7 +257,7 @@ export default function SendMoneyForm() {
 
           <VStack w="full" spacing="2">
             <StatLabel
-              icon={<RemoveIcon />}
+              icon={<PlusIcon />}
               label="Transfer fee"
               value={formatPrice(
                 transactionParams?.transactionParameters.fee ?? 0,

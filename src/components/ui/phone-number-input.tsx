@@ -16,6 +16,8 @@ import { forwardRef, ReactNode, useEffect, useState } from 'react';
 
 import { getCountryTelCode } from '@/lib/helpers';
 
+import AngleDownSmIcon from '../icons/angle-down-sm-icon';
+
 type PhoneNumberInputProps = {
   country: string;
   options: { value: string; label: string }[];
@@ -122,15 +124,22 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
               ))}
             </chakra.select>
 
-            {selectedCountry ? (
-              <HStack w="full" h="full" justify="flex-end" pr="1px">
+            <HStack
+              w="fit-content"
+              h="full"
+              justify="flex-end"
+              px="1px"
+              spacing="1"
+            >
+              {selectedCountry ? (
                 <Text color="#979797" fontSize="14px">
                   +{countryCode}
                 </Text>
-              </HStack>
-            ) : (
-              <PhoneIcon w="full" />
-            )}
+              ) : (
+                <PhoneIcon w="full" />
+              )}
+              <AngleDownSmIcon width="10px" height="10px" />
+            </HStack>
           </Box>
         </InputLeftElement>
         <Input

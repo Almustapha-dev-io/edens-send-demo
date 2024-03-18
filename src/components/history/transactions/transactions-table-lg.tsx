@@ -52,16 +52,23 @@ export default function TransactionsTableLg({
       {
         header: 'Beneficiary',
         cell: (info) => info.getValue(),
-        accessorFn: (row) => (
-          <VStack w="full" align="flex-start" spacing="0">
-            <Text fontWeight="400" fontSize="14px">
-              {row.beneficiary_name}
-            </Text>
-            <Text fontWeight="400" fontSize="14px" color="#979797">
-              {`${row.beneficiary_account_number} | ${snakeToFlat(row.beneficiary_wallet_name ?? row.beneficiary_type)}`}
-            </Text>
-          </VStack>
-        ),
+        accessorFn: (row) => {
+          const accountCategory =
+            row.beneficiary_wallet_name ?? row.beneficiary_type;
+          const name =
+            row.beneficiary_account_number ?? row.beneficiary_phone_number;
+
+          return (
+            <VStack w="full" align="flex-start" spacing="0">
+              <Text fontWeight="400" fontSize="14px">
+                {row.beneficiary_name ?? ''}
+              </Text>
+              <Text fontWeight="400" fontSize="14px" color="#979797">
+                {`${name ?? '-'} | ${accountCategory ? snakeToFlat(accountCategory) : 'Airtime'}`}
+              </Text>
+            </VStack>
+          );
+        },
       },
       {
         header: 'Amount',

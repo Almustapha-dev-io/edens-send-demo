@@ -55,7 +55,7 @@ export default function TransferDetails() {
         />
         <SummaryItem label="Total Fees" content="0.00" />
         <SummaryItem
-          label={`${recipientDetails?.phoneNumber ?? '-'} gets`}
+          label={`${recipientDetails?.phoneNumber ?? 'Recipient'} gets`}
           content={formatNumber(recipientValue, { fractionDigits: 2 })}
         />
       </VStack>

@@ -24,6 +24,12 @@ import TransactionType from './transaction-type';
 function TransactionCard({ transaction }: { transaction: TTransaction }) {
   const navigate = useNavigate();
 
+  const accountCategory =
+    transaction.beneficiary_wallet_name ?? transaction.beneficiary_type;
+  const name =
+    transaction.beneficiary_account_number ??
+    transaction.beneficiary_phone_number;
+
   return (
     <Button
       variant="unstyled"
@@ -85,7 +91,7 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               Beneficiary
             </Heading>
             <Text fontWeight="400" fontSize="14px" textAlign="end">
-              {transaction.beneficiary_name}
+              {transaction.beneficiary_name ?? ''}
             </Text>
             <Text
               fontWeight="400"
@@ -93,11 +99,8 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
               color="#979797"
               textAlign="end"
             >
-              {transaction.beneficiary_account_number} |{' '}
-              {snakeToFlat(
-                transaction.beneficiary_wallet_name ??
-                  transaction.beneficiary_type
-              )}
+              {name} |{' '}
+              {accountCategory ? snakeToFlat(accountCategory) : 'Airtime'}
             </Text>
           </VStack>
         </HStack>

@@ -48,6 +48,12 @@ export default function Receipt({ transaction }: Props) {
         : 0,
     [transaction.fee]
   );
+  const accountCategory =
+    transaction.beneficiary_wallet_name ?? transaction.beneficiary_type;
+  const name =
+    transaction.beneficiary_account_number ??
+    transaction.beneficiary_phone_number;
+
   return (
     <VStack w="full" h="fit-content" spacing="8">
       <VStack w="full" spacing="6" align="flex-start">
@@ -58,7 +64,7 @@ export default function Receipt({ transaction }: Props) {
         <VStack w="full" spacing="0">
           <SummaryItem
             label="Account Number"
-            content={`${transaction.beneficiary_name} | ${snakeToFlat(transaction.beneficiary_wallet_name ?? transaction.beneficiary_type)}`}
+            content={`${name} | ${accountCategory ? snakeToFlat(accountCategory) : 'Airtime'}`}
           />
           <SummaryItem
             label="Account Name"

@@ -21,6 +21,7 @@ import { useSendAirtimeContext } from '@/context/send-airtime';
 import {
   useCheckEdensSendClient,
   useIsAuthenticated,
+  useUser,
   useWillUnmount,
 } from '@/hooks';
 import { getServerErrorMessage, handleServerError } from '@/lib/errors';
@@ -43,6 +44,7 @@ export default function SenderDetails() {
     (s) => s.transactionParams.sendAirtime
   );
 
+  const user = useUser();
   const isAuth = useIsAuthenticated();
   const navigate = useNavigate();
 
@@ -57,6 +59,9 @@ export default function SenderDetails() {
     mode: 'all',
     defaultValues: {
       ...senderDetails,
+      email: isAuth
+        ? user?.email ?? senderDetails?.email
+        : senderDetails?.email,
     },
   });
 
@@ -196,7 +201,7 @@ export default function SenderDetails() {
             )}
           />
 
-          <FormControl isInvalid={!!errors.email}>
+          <FormControl isInvalid={!!errors.email} isDisabled={isAuth}>
             <FormLabel>Email address</FormLabel>
             <Input
               type="email"
@@ -214,6 +219,7 @@ export default function SenderDetails() {
               w="full"
               variant={{ base: 'outline', lg: 'solid' }}
               type="submit"
+              isLoading={isLoading}
             >
               Continue
             </Button>

@@ -59,7 +59,6 @@ export default function SenderDetails() {
   });
 
   const { onNextPage, onPrevioussPage } = useSendMoneyContext();
-
   const { checkClientMutation, isLoading, isSuccess, error, isError } =
     useCheckEdensSendClient({
       hideSuccessMsg: true,
