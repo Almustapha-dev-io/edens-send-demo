@@ -93,7 +93,15 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
     return (
       <InputGroup size={size} {...rest}>
         <InputLeftElement>
-          <Box pos="relative" my="auto" w="full" h="90%">
+          <Box
+            pos="relative"
+            my="auto"
+            w="full"
+            h="90%"
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+          >
             <chakra.select
               p="0"
               w="full"

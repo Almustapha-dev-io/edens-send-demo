@@ -66,5 +66,8 @@ export function getServerErrorMessage(
 }
 
 export function handleServerError(error: unknown) {
-  toast(getServerErrorMessage(error), { type: 'error' });
+  toast(getServerErrorMessage(error), {
+    type: 'error',
+    position: 'bottom-center',
+  });
 }

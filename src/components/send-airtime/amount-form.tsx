@@ -19,6 +19,11 @@ import { toast } from 'react-toastify';
 import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
 import { formatNumber } from '@/lib/helpers';
+import {
+  setSendAirtimeAmount,
+  useAppDispatch,
+  useAppSelector,
+} from '@/lib/redux';
 
 import ArrowLeftSmIcon from '../icons/arrow-left-sm-icon';
 import DotIcon from '../icons/dot-icon';
@@ -41,7 +46,10 @@ const BUTTONS = [
 ];
 
 export default function AmountForm() {
-  const [value, setValue] = useState('0');
+  const dispatch = useAppDispatch();
+  const { amount } = useAppSelector((s) => s.transactionParams.sendAirtime);
+
+  const [value, setValue] = useState(() => amount?.toString() ?? '0');
   const shouldValidate = useRef(false);
 
   const { getInputProps } = useNumberInput({
@@ -97,6 +105,12 @@ export default function AmountForm() {
       shouldValidate.current = true;
     }
   }, [value]);
+
+  useEffect(() => {
+    if (isFinite(+value) && !isNaN(+value)) {
+      dispatch(setSendAirtimeAmount(value));
+    }
+  }, [dispatch, value]);
 
   return (
     <VStack w="519px" maxW="full" spacing="6">

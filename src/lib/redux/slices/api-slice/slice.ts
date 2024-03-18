@@ -4,7 +4,11 @@ import { apiBaseUrl } from '@/lib/env';
 
 import getBaseQueryWithLogout from '../../base-query';
 import apiTagTypes from './api-tag-types';
-import { getSendMoneyEndpoints, getTransactionsEndpoints } from './builders';
+import {
+  getSendAirtimeEndpoints,
+  getSendMoneyEndpoints,
+  getTransactionsEndpoints,
+} from './builders';
 
 const apiSlice = createApi({
   baseQuery: getBaseQueryWithLogout(apiBaseUrl),
@@ -12,6 +16,7 @@ const apiSlice = createApi({
   endpoints: (build) => ({
     ...getSendMoneyEndpoints(build),
     ...getTransactionsEndpoints(build),
+    ...getSendAirtimeEndpoints(build),
   }),
 });
 
@@ -27,4 +32,7 @@ export const {
   useLazyGetTransactionQuery,
   useLazyGetTransactionsQuery,
   useInitiateSendMoneyMutation,
+  useGetAirtimeBillProvidersQuery,
+  useLazyGetAirtimeBillProvidersQuery,
+  useInitiateAirtimeTransactionMutation,
 } = apiSlice;

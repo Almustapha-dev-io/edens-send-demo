@@ -6,6 +6,7 @@ import {
   useAppSelector,
   useCheckEdensClientMutation,
   useCreateTransactionParamsMutation,
+  useInitiateAirtimeTransactionMutation,
   useInitiateSendMoneyMutation,
   useVerifyBeneficiaryMutation,
 } from '@/lib/redux';
@@ -148,6 +149,39 @@ export function useInitiateSendMoney({
 
   return Object.freeze({
     initiateSendMoneyMutation,
+    ...params,
+  });
+}
+
+export function useInitiateSendAirtime({
+  hideSuccessMsg = false,
+  hideErrorMsg = false,
+}: TQueryArgs = {}) {
+  const [initiateSendAirtimeMutation, params] =
+    useInitiateAirtimeTransactionMutation();
+
+  useEffect(() => {
+    if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
+      toast('Transaction created', {
+        type: 'success',
+        position: 'bottom-center',
+      });
+    }
+  }, [
+    hideSuccessMsg,
+    params.data?.message,
+    params.isLoading,
+    params.isSuccess,
+  ]);
+
+  useEffect(() => {
+    if (!hideErrorMsg && !params.isLoading && params.isError && params.error) {
+      handleServerError(params.error);
+    }
+  }, [hideErrorMsg, params.error, params.isError, params.isLoading]);
+
+  return Object.freeze({
+    initiateSendAirtimeMutation,
     ...params,
   });
 }

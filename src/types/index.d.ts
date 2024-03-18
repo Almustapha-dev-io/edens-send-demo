@@ -101,3 +101,54 @@ type InitiateSendTransactionDTO = {
   purpose_of_transfer: string;
   relation_with_beneficiary: string;
 };
+
+type TAirtimeCountry = {
+  id: string;
+  country_code: string;
+  name: string;
+  is_active: boolean;
+  billproviders: TAirtimeBillProvider[];
+};
+
+type TAirtimeBillProvider = {
+  operator_id: string;
+  bill_id: string;
+  biller_id: string;
+  name: string;
+  is_active: boolean;
+  operatorProducts: TAirtimeBillProviderProduct[];
+};
+
+type TAirtimeBillProviderProduct = {
+  id: string;
+  productType: {
+    id: string;
+    name: string;
+  };
+  productCategory: {
+    id: string;
+    name: string;
+  };
+  priceType: string;
+  name: string;
+  description: string;
+  price: {
+    min: {
+      operator: string;
+      user: string;
+    };
+    max: {
+      operator: string;
+      user: string;
+    };
+  };
+};
+
+type InitiateAirtimeTransactionDTO = {
+  amount: number;
+  bill_id: string;
+  beneficiary_phone_number: string;
+  bill_provider_id: string;
+  operator_id: string;
+  product_id: string;
+};

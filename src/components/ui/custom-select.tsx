@@ -15,6 +15,7 @@ import {
   PopoverHeader,
   PopoverTrigger,
   Portal,
+  Spinner,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -33,6 +34,7 @@ type Props<T> = {
   searchPlaceholder?: string;
   value?: TCustomSelectItem<T>;
   options: TCustomSelectItem<T>[];
+  isLoading?: boolean;
   onChange(value: TCustomSelectItem<T>): void;
 };
 
@@ -43,6 +45,7 @@ export default function CustomSelect<T>({
   placeholder = 'Select One',
   searchPlaceholder = 'Search...',
   options,
+  isLoading,
   value,
   onChange,
 }: Props<T>) {
@@ -103,12 +106,16 @@ export default function CustomSelect<T>({
                   value={value?.label}
                 />
                 <InputRightElement>
-                  <AngleDownSmIcon
-                    style={{
-                      transform: `rotate(${isOpen ? '180deg' : '0deg'})`,
-                      transition: 'all 0.2s',
-                    }}
-                  />
+                  {isLoading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <AngleDownSmIcon
+                      style={{
+                        transform: `rotate(${isOpen ? '180deg' : '0deg'})`,
+                        transition: 'all 0.2s',
+                      }}
+                    />
+                  )}
                 </InputRightElement>
               </InputGroup>
             </Button>

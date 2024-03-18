@@ -1,3 +1,4 @@
+import { toZod } from 'tozod';
 import * as z from 'zod';
 
 import { PHONE_NUMBER_PATTERN } from '@/constants';
@@ -5,12 +6,12 @@ import { PHONE_NUMBER_PATTERN } from '@/constants';
 export const RecipientDetailsSchema = z.object({
   country: z.object({
     label: z.string(),
-    value: z.string(),
+    value: z.late.object(() => ({})) as toZod<TAirtimeCountry>,
     iconUrl: z.string().optional(),
   }),
   network: z.object({
     label: z.string(),
-    value: z.string(),
+    value: z.late.object(() => ({})) as toZod<TAirtimeBillProvider>,
     iconUrl: z.string().optional(),
   }),
   phoneNumber: z

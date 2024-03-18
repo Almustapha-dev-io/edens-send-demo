@@ -1,4 +1,5 @@
 import { Flex, Image, useBreakpointValue } from '@chakra-ui/react';
+import { useEffect } from 'react';
 import { Case, Switch } from 'react-if';
 
 import AmountForm from '@/components/send-airtime/amount-form';
@@ -6,11 +7,25 @@ import RecipientDetails from '@/components/send-airtime/recipient-details';
 import SenderDetails from '@/components/send-airtime/sender-details';
 import TransferSummary from '@/components/send-airtime/transfer-summary';
 import { useSendAirtimeContext } from '@/context/send-airtime';
+import { useIsAuthenticated, useWillUnmount } from '@/hooks';
+import { resetSendAirtime, useAppDispatch } from '@/lib/redux';
 import { SendAirtimePageState } from '@/types/enums';
 
 export default function SendAirtime() {
   const isLargeScreen = useBreakpointValue({ base: false, lg: true });
-  const { pageState } = useSendAirtimeContext();
+  const { pageState, setPage } = useSendAirtimeContext();
+  const isAuth = useIsAuthenticated();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (!isAuth && pageState === SendAirtimePageState.SUMMARY) {
+      setPage(SendAirtimePageState.SENDER_DETAILS);
+    }
+  }, [isAuth, pageState, setPage]);
+
+  useWillUnmount(() => {
+    dispatch(resetSendAirtime());
+  });
 
   return (
     <>
@@ -42,7 +57,7 @@ export default function SendAirtime() {
         maxW="container.xl"
         mx="auto"
         px={{ base: 4, md: 6 }}
-        pt={{ base: '16px', lg: '60px' }}
+        pt={{ base: '16px', lg: '20px' }}
         flex="1"
         direction="column"
         justify="flex-start"

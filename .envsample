@@ -1,2 +1,3 @@
 VITE_API_BASE_URL=https://edens360-core-api.herokuapp.com
 VITE_EDENS_CLIENT_ID=********************************
+VITE_EDENS_PAYMENTS_BASE=https://luminous-gumption-de7527.netlify.app/account/payment-link/payment-card/

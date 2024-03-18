@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CARD_SHADOW } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
 import { useInitiateSendMoney } from '@/hooks';
-import { formatPrice } from '@/lib/helpers';
+import { formatPrice, generatePaymentLink } from '@/lib/helpers';
 import { resetSendMoney, useAppDispatch, useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
@@ -126,9 +126,24 @@ export default function TransferSummary() {
     transactionParams,
   ]);
 
+  const totalAmountRef = useRef(totalAmount);
+  totalAmountRef.current = totalAmount;
+
   useEffect(() => {
     if (!isLoading && data && isSuccess) {
       // Navigate to payment gateway
+      if (window) {
+        window.location.replace(
+          generatePaymentLink({
+            amount: totalAmountRef.current,
+            formattedAmount: formatPrice(totalAmountRef.current, {
+              fractionDigits: 2,
+            }),
+            ref: data.reference,
+          })
+        );
+      }
+
       resetPageState();
       dispatch(resetSendMoney());
     }

@@ -13,12 +13,14 @@ type TSendAirtimeContext = {
   onNextPage(): void;
   onPreviousPage(): void;
   resetPageState(): void;
+  setPage(page: SendAirtimePageState): void;
 };
 
 const SendAirtimeContext = createContext<TSendAirtimeContext>({
   onNextPage() {},
   onPreviousPage() {},
   resetPageState() {},
+  setPage() {},
   pageState: SendAirtimePageState.RECIPIENT_DETAILS,
 });
 
@@ -40,6 +42,10 @@ export default function SendAirtimeContextProvider({
   const [curPage, setCurPage] = useState<SendAirtimePageState>(
     SendAirtimePageState.RECIPIENT_DETAILS
   );
+
+  const setPage = useCallback((p: SendAirtimePageState) => {
+    setCurPage(p);
+  }, []);
 
   const onNextPage = useCallback(() => {
     setCurPage((cur) => {
@@ -75,6 +81,7 @@ export default function SendAirtimeContextProvider({
         onNextPage,
         onPreviousPage,
         resetPageState,
+        setPage,
         pageState: curPage,
       }}
     >

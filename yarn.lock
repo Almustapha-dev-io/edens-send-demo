@@ -5169,6 +5169,11 @@ toggle-selection@^1.0.6:
   resolved "https://registry.yarnpkg.com/toggle-selection/-/toggle-selection-1.0.6.tgz#6e45b1263f2017fa0acc7d89d78b15b8bf77da32"
   integrity sha512-BiZS+C1OS8g/q2RRbJmy59xpyghNBqrr6k5L/uKBGRsTfxmu3ffiRnd8mlGPUVayg8pvfi5urfnu8TU7DVOkLQ==
 
+tozod@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/tozod/-/tozod-3.0.0.tgz#ee72eb95de3647076ddc198f5c291b1dc728298e"
+  integrity sha512-R03/moNPEGgWKoTdCsEJuyEoP6NtXyhWg9L9lJhF2XyCR2Ce9XE+yXaswaVmqyBpHsRPC2Pk38mK8Ex7iHaXcg==
+
 ts-api-utils@^1.0.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/ts-api-utils/-/ts-api-utils-1.2.1.tgz#f716c7e027494629485b21c0df6180f4d08f5e8b"

@@ -15,7 +15,8 @@ import {
 export type TApiTag =
   | 'CREATE_SEND_TRANSACTION_PARAMS'
   | 'TRANSACTION'
-  | 'TRANSACTIONS';
+  | 'TRANSACTIONS'
+  | 'AIRTIME_PRODUCTS';
 
 export type TAppEndpointBuilder = EndpointBuilder<
   BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError>,

@@ -11,10 +11,25 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { codes as countries } from 'country-calling-code';
+import { useEffect, useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import { CARD_SHADOW } from '@/constants';
+import { CARD_SHADOW, COMPLETE_LOGIN, COMPLETE_SIGNUP } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
+import {
+  useCheckEdensSendClient,
+  useIsAuthenticated,
+  useWillUnmount,
+} from '@/hooks';
+import { getServerErrorMessage, handleServerError } from '@/lib/errors';
+import {
+  setSendAirtimeSenderDetails,
+  useAppDispatch,
+  useAppSelector,
+} from '@/lib/redux';
+import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 import {
   SenderDetailsSchema,
   TSenderDetails,
@@ -23,21 +38,88 @@ import {
 import PhoneNumberInput from '../ui/phone-number-input';
 
 export default function SenderDetails() {
+  const dispatch = useAppDispatch();
+  const { senderDetails } = useAppSelector(
+    (s) => s.transactionParams.sendAirtime
+  );
+
+  const isAuth = useIsAuthenticated();
+  const navigate = useNavigate();
+
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm<TSenderDetails>({
     resolver: zodResolver(SenderDetailsSchema),
     mode: 'all',
+    defaultValues: {
+      ...senderDetails,
+    },
   });
 
   const { onNextPage, onPreviousPage } = useSendAirtimeContext();
+  const { checkClientMutation, isLoading, isSuccess, error, isError } =
+    useCheckEdensSendClient({
+      hideSuccessMsg: true,
+      hideErrorMsg: true,
+    });
 
-  const submitHandler: SubmitHandler<TSenderDetails> = () => {
-    onNextPage();
+  const triggerRef = useRef<TMutationCreatorResult>();
+
+  const submitHandler: SubmitHandler<TSenderDetails> = ({ email }) => {
+    if (isLoading) {
+      toast('Verifying your email...', { type: 'info' });
+      return;
+    }
+
+    if (isAuth) {
+      onNextPage();
+      return;
+    }
+
+    triggerRef.current = checkClientMutation({
+      email,
+    });
   };
+
+  useWillUnmount(() => {
+    if (triggerRef.current) {
+      triggerRef.current.abort();
+    }
+  });
+
+  useEffect(() => {
+    const subsciption = watch((values) => {
+      dispatch(setSendAirtimeSenderDetails(values as TSenderDetails));
+    });
+
+    return () => {
+      subsciption.unsubscribe();
+    };
+  }, [dispatch, watch]);
+
+  useEffect(() => {
+    if (isSuccess && !isLoading) {
+      navigate(COMPLETE_LOGIN);
+    }
+  }, [isLoading, isSuccess, navigate]);
+
+  useEffect(() => {
+    if (isError && !isLoading) {
+      const errorMsg = getServerErrorMessage(error);
+      if (
+        typeof errorMsg === 'string' &&
+        errorMsg.toLowerCase() === 'sender not found'
+      ) {
+        navigate(COMPLETE_SIGNUP);
+      } else {
+        handleServerError(error);
+      }
+    }
+  }, [isError, isLoading, navigate, error]);
 
   return (
     <chakra.form w="519px" maxW="full" onSubmit={handleSubmit(submitHandler)}>
@@ -96,14 +178,14 @@ export default function SenderDetails() {
             name="phoneNumber"
             render={({ field, fieldState }) => (
               <FormControl isInvalid={!!fieldState.error}>
-                <FormLabel>Recipient MoMo/Phone number</FormLabel>
+                <FormLabel>Phone number</FormLabel>
                 <PhoneNumberInput
                   id="phoneNumber"
                   options={countries.map((country) => ({
                     label: country.country,
                     value: country.isoCode2,
                   }))}
-                  country="LR"
+                  country=""
                   size="lg"
                   ref={field.ref}
                   value={field.value}

@@ -32,8 +32,8 @@ export type TTransactionParamsState = {
   };
 
   sendAirtime: {
-    recipientDetails?: TSendAirtimeRecipientDetails;
     amount?: string | number;
+    recipientDetails?: TSendAirtimeRecipientDetails;
     senderDetails?: TSenderDetails;
   };
 };
@@ -132,6 +132,43 @@ const createTransactionsParamsSlice = (initialState: TTransactionParamsState) =>
           country: '',
         };
       },
+
+      setSendAirtimeRecipientDetails(
+        state,
+        { payload }: PayloadAction<TSendAirtimeRecipientDetails | undefined>
+      ) {
+        state.sendAirtime.recipientDetails = payload;
+      },
+
+      setSendAirtimeSenderDetails(
+        state,
+        { payload }: PayloadAction<TSenderDetails | undefined>
+      ) {
+        state.sendAirtime.senderDetails = payload;
+      },
+
+      setSendAirtimeAmount(
+        state,
+        { payload }: PayloadAction<number | string | undefined>
+      ) {
+        state.sendAirtime.amount = payload;
+      },
+
+      resetSendAirtime(state, { payload }: PayloadAction<string | undefined>) {
+        if (payload === 'amount') {
+          delete state.sendAirtime.amount;
+          return;
+        }
+
+        if (payload === 'recipientDetails') {
+          delete state.sendAirtime.recipientDetails;
+          return;
+        }
+
+        if (payload === 'senderDetails') {
+          delete state.sendAirtime.senderDetails;
+        }
+      },
     },
   });
 
@@ -150,4 +187,8 @@ export const {
   setSenderDetails,
   setRecipientEmail,
   setSecureTransferDetails,
+  resetSendAirtime,
+  setSendAirtimeRecipientDetails,
+  setSendAirtimeSenderDetails,
+  setSendAirtimeAmount,
 } = transactionParamsSlice.actions;

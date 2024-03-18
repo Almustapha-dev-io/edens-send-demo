@@ -10,3 +10,12 @@ export function useWillUnmount(fn: () => void) {
     };
   }, []);
 }
+
+export function useOnMount(fn: () => void) {
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
+  useEffect(() => {
+    fnRef.current();
+  }, []);
+}

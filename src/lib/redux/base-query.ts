@@ -36,7 +36,6 @@ const getBaseQueryWithLogout = (baseUrl: string) => {
       typeof extraOptions.ignoreLogout === 'boolean' &&
       extraOptions.ignoreLogout;
 
-    console.log(result.error && result.error.status === 401 && !ignoreLogout);
     if (result.error && result.error.status === 401 && !ignoreLogout) {
       toast('Your session expired!', {
         type: 'error',
