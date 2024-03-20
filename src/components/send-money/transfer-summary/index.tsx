@@ -5,7 +5,7 @@ import { CARD_SHADOW } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
 import { useInitiateSendMoney } from '@/hooks';
 import { formatPrice, generatePaymentLink } from '@/lib/helpers';
-import { resetSendMoney, useAppDispatch, useAppSelector } from '@/lib/redux';
+import { useAppDispatch, useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
 import RecipientDetails from './recipient-details';
@@ -140,9 +140,6 @@ export default function TransferSummary() {
           })
         );
       }
-
-      resetPageState();
-      dispatch(resetSendMoney());
     }
   }, [data, dispatch, isLoading, isSuccess, resetPageState]);
 

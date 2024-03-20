@@ -5,7 +5,7 @@ import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
 import { useInitiateSendAirtime } from '@/hooks';
 import { formatNumber, formatPrice, generatePaymentLink } from '@/lib/helpers';
-import { resetSendAirtime, useAppDispatch, useAppSelector } from '@/lib/redux';
+import { useAppDispatch, useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
 import RecipientDetails from './recipient-details';
@@ -75,9 +75,6 @@ export default function TransferSummary() {
           })
         );
       }
-
-      resetPageState();
-      dispatch(resetSendAirtime());
     }
   }, [data, dispatch, isLoading, isSuccess, resetPageState]);
 

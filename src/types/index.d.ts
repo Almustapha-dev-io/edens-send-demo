@@ -58,6 +58,13 @@ type VerifyBeneficiaryDTO =
   | TVerifyWalletBeneficiaryDTO
   | TVerifyBankBeneficiaryDTO;
 
+type TTransactionProgressUpdate = {
+  timestamp: number;
+  message: string;
+  reason?: string;
+  status?: boolean;
+};
+
 type TTransaction = {
   eden_send_client_id: string;
   reference: string;
@@ -68,7 +75,7 @@ type TTransaction = {
   beneficiary_email: string | null;
   narration: string;
   status: string;
-  progress_report: string;
+  progress_report: TTransactionProgressUpdate[];
   created_at: string;
   updated_at: string;
   beneficiary_type: string | null;
@@ -151,4 +158,10 @@ type InitiateAirtimeTransactionDTO = {
   bill_provider_id: string;
   operator_id: string;
   product_id: string;
+};
+
+type RetryTransactionDTO = {
+  transactionId: string;
+  beneficiary_account_number?: string;
+  beneficiary_phone_number?: string;
 };

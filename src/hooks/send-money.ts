@@ -8,6 +8,7 @@ import {
   useCreateTransactionParamsMutation,
   useInitiateAirtimeTransactionMutation,
   useInitiateSendMoneyMutation,
+  useRetryTransactionsMutation,
   useVerifyBeneficiaryMutation,
 } from '@/lib/redux';
 
@@ -182,6 +183,38 @@ export function useInitiateSendAirtime({
 
   return Object.freeze({
     initiateSendAirtimeMutation,
+    ...params,
+  });
+}
+
+export function useRetryTransaction({
+  hideSuccessMsg = false,
+  hideErrorMsg = false,
+}: TQueryArgs = {}) {
+  const [retryTransactionMutation, params] = useRetryTransactionsMutation();
+
+  useEffect(() => {
+    if (params.isSuccess && !params.isLoading && !hideSuccessMsg) {
+      toast('Retry successful', {
+        type: 'success',
+        position: 'bottom-center',
+      });
+    }
+  }, [
+    hideSuccessMsg,
+    params.data?.message,
+    params.isLoading,
+    params.isSuccess,
+  ]);
+
+  useEffect(() => {
+    if (!hideErrorMsg && !params.isLoading && params.isError && params.error) {
+      handleServerError(params.error);
+    }
+  }, [hideErrorMsg, params.error, params.isError, params.isLoading]);
+
+  return Object.freeze({
+    retryTransactionMutation,
     ...params,
   });
 }

@@ -51,4 +51,19 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
       ignoreLogout: true,
     },
   }),
+
+  retryTransactions: builder.mutation<TServerResponse<{}>, RetryTransactionDTO>(
+    {
+      query: ({ transactionId, ...body }) => ({
+        url: `/api/v1/eden_send/transactions/${transactionId}/retry`,
+        method: HttpMethods.PATCH,
+        body,
+      }),
+      invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
+      transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
+      extraOptions: {
+        ignoreLogout: true,
+      },
+    }
+  ),
 });

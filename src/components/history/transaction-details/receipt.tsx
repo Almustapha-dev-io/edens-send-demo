@@ -1,4 +1,4 @@
-import { Box, Button, Heading, VStack } from '@chakra-ui/react';
+import { Box, Heading, VStack } from '@chakra-ui/react';
 import { ReactNode, useMemo } from 'react';
 
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
@@ -101,7 +101,7 @@ export default function Receipt({ transaction }: Props) {
           />
         </VStack>
       </VStack>
-
+      {/* 
       <Button
         w="full"
         size="lg"
@@ -109,7 +109,7 @@ export default function Receipt({ transaction }: Props) {
         variant={{ base: 'outline', lg: 'solid' }}
       >
         Download Receipt
-      </Button>
+      </Button> */}
     </VStack>
   );
 }
