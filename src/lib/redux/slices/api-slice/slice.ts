@@ -36,4 +36,6 @@ export const {
   useLazyGetAirtimeBillProvidersQuery,
   useInitiateAirtimeTransactionMutation,
   useRetryTransactionsMutation,
+  useGetAirtimeOperatorProductQuery,
+  useLazyGetAirtimeOperatorProductQuery,
 } = apiSlice;

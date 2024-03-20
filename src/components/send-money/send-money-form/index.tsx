@@ -12,14 +12,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { If, Then } from 'react-if';
 import { toast } from 'react-toastify';
@@ -73,17 +66,20 @@ export default function SendMoneyForm() {
     control,
     watch,
     handleSubmit,
+    getValues,
+    register,
     formState: { isValid },
   } = useForm<TSendMoneyAmount>({
     resolver: zodResolver(SendMoneyAmountSchema),
-    defaultValues: { amount: sendMoneyParams?.amount ?? 0 },
+    defaultValues: {
+      amount: sendMoneyParams?.amount ?? 0,
+      country: sendMoneyParams?.country || 'LR',
+    },
     mode: 'all',
   });
 
   const [debouncedAmount] = useDebounceValue(watch('amount'), 250);
-  const [country, setCountry] = useState<string>(
-    sendMoneyParams.country || 'LR'
-  );
+
   const { onNextPage } = useSendMoneyContext();
   const {
     createTransactionsParamsMutation,
@@ -121,7 +117,7 @@ export default function SendMoneyForm() {
 
     dispatch(
       setSendMoneyTransactionsParams({
-        country,
+        country: values.country,
         amount: values.amount,
         ...transactionParams.transactionParameters,
       })
@@ -130,24 +126,30 @@ export default function SendMoneyForm() {
   };
 
   useEffect(() => {
+    const country = getValues('country');
     createParams(+debouncedAmount, country);
-  }, [country, createParams, debouncedAmount]);
+  }, [createParams, debouncedAmount, getValues]);
 
   const allowReset = useRef(false);
 
   const { isSuccess, data } = useGetUserLocation();
 
   useEffect(() => {
-    if (allowReset.current) {
-      dispatch(resetSendMoney());
-    }
+    const subscription = watch((_values, { name }) => {
+      console.log({ _values });
+      if (name === 'country' && allowReset.current) {
+        dispatch(resetSendMoney());
+      }
+    });
 
     return () => {
+      subscription.unsubscribe();
       allowReset.current = true;
     };
-  }, [country, dispatch]);
+  }, [watch, dispatch]);
 
   const getDestinationCurrency = () => {
+    const country = watch('country');
     if (!transactionParams) return country === 'NG' ? '₦' : '$';
     return transactionParams.transactionParameters.destinationCurrency === 'USD'
       ? '$'
@@ -314,12 +316,8 @@ export default function SendMoneyForm() {
                 Select Country
               </Text>
               <HStack w="fit-content">
-                {COUNTRIES_FLAGS[country]}
-                <Select
-                  variant="unstyled"
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                >
+                {COUNTRIES_FLAGS[watch('country')]}
+                <Select variant="unstyled" {...register('country')}>
                   {COUNTRIES.map((c) => (
                     <option value={c.value}>{c.label}</option>
                   ))}

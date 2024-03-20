@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { codes } from 'country-calling-code';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { If, Then } from 'react-if';
 
@@ -24,7 +24,9 @@ import {
   useAppDispatch,
   useAppSelector,
   useGetAirtimeBillProvidersQuery,
+  useLazyGetAirtimeOperatorProductQuery,
 } from '@/lib/redux';
+import { TQueryActionCreatorResult } from '@/lib/redux/slices/api-slice/types';
 import {
   RecipientDetailsSchema,
   TRecipientDetails,
@@ -54,17 +56,35 @@ export default function RecipientDetails() {
   });
 
   const {
-    isFetching,
-    isError,
+    isFetching: isFetchingProviders,
+    isError: isFetchProvidersError,
     data: countriesRes,
-
-    refetch,
+    refetch: refetchProviders,
   } = useGetAirtimeBillProvidersQuery();
+
+  const [
+    getOperatorProductsQuery,
+    {
+      isFetching: isFetchingProducts,
+      isError: isFetchProductsError,
+      data: productsRes,
+    },
+  ] = useLazyGetAirtimeOperatorProductQuery();
 
   const { onNextPage } = useSendAirtimeContext();
   const [networks, setNetworks] = useState<
     TCustomSelectItem<TAirtimeBillProvider>[]
   >([]);
+
+  const triggerRef = useRef<TQueryActionCreatorResult>();
+
+  const getProducts = useCallback(() => {
+    const network = watch('network');
+    if (!network) return;
+    if (triggerRef.current) triggerRef.current.abort();
+
+    triggerRef.current = getOperatorProductsQuery(network.value.operator_id);
+  }, [getOperatorProductsQuery, watch]);
 
   const submitHandler: SubmitHandler<TRecipientDetails> = () => {
     onNextPage();
@@ -77,6 +97,16 @@ export default function RecipientDetails() {
       value: b,
     }));
   }, [countriesRes]);
+
+  const products = useMemo<
+    TCustomSelectItem<TAirtimeBillProviderProduct>[]
+  >(() => {
+    if (!productsRes) return [];
+    return productsRes.operatorProducts.map((p) => ({
+      label: p.name,
+      value: p,
+    }));
+  }, [productsRes]);
 
   const { isSuccess, data } = useGetUserLocation();
 
@@ -93,12 +123,16 @@ export default function RecipientDetails() {
   useEffect(() => {
     const subscription = watch((values, { name }) => {
       if (name === 'country' && values.country) {
-        const providers = values.country.value?.billproviders?.map((b) => ({
+        const providers = values.country.value?.country_operators?.map((b) => ({
           label: b?.name ?? '',
           value: b as TAirtimeBillProvider,
         })) as TCustomSelectItem<TAirtimeBillProvider>[];
 
         setNetworks((prev) => providers ?? prev);
+      }
+
+      if (name === 'network') {
+        getProducts();
       }
 
       dispatch(setSendAirtimeRecipientDetails(values as TRecipientDetails));
@@ -107,16 +141,32 @@ export default function RecipientDetails() {
     return () => {
       subscription.unsubscribe();
     };
-  }, [dispatch, watch]);
+  }, [dispatch, getProducts, watch]);
 
-  if (isError) {
+  if (isFetchProvidersError) {
+    return (
+      <ErrorPlaceholder
+        w="519px"
+        maxW="full"
+        label="Failed to get operators"
+        retryHandler={refetchProviders}
+        isLoading={isFetchingProviders}
+        bg="#fff"
+        px="4"
+        py="10"
+        rounded="12px"
+      />
+    );
+  }
+
+  if (isFetchProductsError) {
     return (
       <ErrorPlaceholder
         w="519px"
         maxW="full"
         label="Failed to get products"
-        retryHandler={refetch}
-        isLoading={isFetching}
+        retryHandler={getProducts}
+        isLoading={isFetchingProducts}
         bg="#fff"
         px="4"
         py="10"
@@ -182,7 +232,7 @@ export default function RecipientDetails() {
                   onChange={field.onChange}
                   options={countries}
                   placeholder="Choose country"
-                  isLoading={isFetching}
+                  isLoading={isFetchingProviders}
                 />
               </FormControl>
             )}
@@ -200,6 +250,24 @@ export default function RecipientDetails() {
                   onChange={field.onChange}
                   options={networks}
                   placeholder="Choose network"
+                />
+              </FormControl>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="product"
+            render={({ field, fieldState }) => (
+              <FormControl isInvalid={!!fieldState.error}>
+                <FormLabel>Choose Product</FormLabel>
+                <CustomSelect
+                  header="Choose product"
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={products}
+                  placeholder="Choose product"
+                  isLoading={isFetchingProducts}
                 />
               </FormControl>
             )}

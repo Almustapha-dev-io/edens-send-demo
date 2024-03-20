@@ -14,6 +14,11 @@ export const RecipientDetailsSchema = z.object({
     value: z.late.object(() => ({})) as toZod<TAirtimeBillProvider>,
     iconUrl: z.string().optional(),
   }),
+  product: z.object({
+    label: z.string(),
+    value: z.late.object(() => ({})) as toZod<TAirtimeBillProviderProduct>,
+    iconUrl: z.string().optional(),
+  }),
   phoneNumber: z
     .string()
     .regex(PHONE_NUMBER_PATTERN, 'Enter a valid phone number'),

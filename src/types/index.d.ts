@@ -113,8 +113,9 @@ type TAirtimeCountry = {
   id: string;
   country_code: string;
   name: string;
-  is_active: boolean;
-  billproviders: TAirtimeBillProvider[];
+  flag: string;
+  is_active: true;
+  country_operators: TAirtimeBillProvider[];
 };
 
 type TAirtimeBillProvider = {
@@ -122,33 +123,18 @@ type TAirtimeBillProvider = {
   bill_id: string;
   biller_id: string;
   name: string;
+  logo: string;
   is_active: boolean;
-  operatorProducts: TAirtimeBillProviderProduct[];
+  product_type: string;
 };
 
 type TAirtimeBillProviderProduct = {
-  id: string;
-  productType: {
-    id: string;
-    name: string;
-  };
-  productCategory: {
-    id: string;
-    name: string;
-  };
-  priceType: string;
+  product_id: string;
   name: string;
-  description: string;
-  price: {
-    min: {
-      operator: string;
-      user: string;
-    };
-    max: {
-      operator: string;
-      user: string;
-    };
-  };
+  product_type: string;
+  min_amount: string;
+  max_amount: string;
+  is_active: boolean;
 };
 
 type InitiateAirtimeTransactionDTO = {

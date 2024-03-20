@@ -56,8 +56,10 @@ export default function AmountForm() {
 
   const { getInputProps } = useNumberInput({
     defaultValue: value,
-    min: 0,
-    max: MAX_AMOUNT,
+    min: recipientDetails ? +recipientDetails.product.value.min_amount : 0,
+    max: recipientDetails
+      ? +recipientDetails.product.value.max_amount
+      : MAX_AMOUNT,
     clampValueOnBlur: true,
     onChange: setValue,
   });
@@ -89,13 +91,21 @@ export default function AmountForm() {
   const checkValidity = useCallback(() => {
     const parsedValue = parseFloat(value);
 
+    const maxAmount = recipientDetails
+      ? +recipientDetails.product.value.max_amount
+      : MAX_AMOUNT;
+
+    const minAmount = recipientDetails
+      ? +recipientDetails.product.value.min_amount
+      : 0;
+
     return (
       !isNaN(parsedValue) &&
       isFinite(parsedValue) &&
-      parsedValue > 0 &&
-      parsedValue <= MAX_AMOUNT
+      parsedValue > minAmount &&
+      parsedValue <= maxAmount
     );
-  }, [value]);
+  }, [recipientDetails, value]);
 
   const isValid = useMemo(() => {
     if (!shouldValidate.current) return true;
@@ -167,7 +177,12 @@ export default function AmountForm() {
               </Editable>
             </Box>
             <Text color="#979797" fontWeight="400" fontSize="14px">
-              Max {formatNumber(MAX_AMOUNT)}
+              Max{' '}
+              {formatNumber(
+                recipientDetails
+                  ? +recipientDetails.product.value.max_amount
+                  : MAX_AMOUNT
+              )}
             </Text>
           </HStack>
           <If condition={!isValid}>
@@ -213,10 +228,13 @@ export default function AmountForm() {
             onClick={() => {
               const isAmntValid = checkValidity();
               if (!isAmntValid) {
-                return toast('Enter a valid amount', {
-                  type: 'error',
-                  position: 'bottom-center',
-                });
+                return toast(
+                  `Enter a valid amount between ${recipientDetails?.product.value.min_amount} and ${recipientDetails?.product.value.max_amount}`,
+                  {
+                    type: 'error',
+                    position: 'bottom-center',
+                  }
+                );
               }
 
               onNextPage();

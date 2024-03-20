@@ -190,7 +190,7 @@ export default function SenderDetails() {
                     label: country.country,
                     value: country.isoCode2,
                   }))}
-                  country=""
+                  country="LR"
                   size="lg"
                   ref={field.ref}
                   value={field.value}

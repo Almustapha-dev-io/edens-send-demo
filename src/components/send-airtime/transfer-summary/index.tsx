@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
 import { useInitiateSendAirtime } from '@/hooks';
-import { formatNumber, formatPrice, generatePaymentLink } from '@/lib/helpers';
+import { formatNumber, generatePaymentLink } from '@/lib/helpers';
 import { useAppDispatch, useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
@@ -37,18 +37,13 @@ export default function TransferSummary() {
   const initiateSendAirtime = useCallback(() => {
     if (isLoading || !recipientDetails || !senderDetails) return;
 
-    const product = recipientDetails.network.value.operatorProducts.find(
-      (p) => p.productType.name.toLowerCase() === 'mobile top up'
-    );
-    const productId = product?.id ?? '';
-
     triggerRef.current = initiateSendAirtimeMutation({
       amount: recipientValue,
       beneficiary_phone_number: recipientDetails.phoneNumber,
       bill_id: recipientDetails.network.value.bill_id,
       bill_provider_id: recipientDetails.network.value.biller_id,
       operator_id: recipientDetails.network.value.operator_id,
-      product_id: productId,
+      product_id: recipientDetails.product.value.product_id,
     });
   }, [
     initiateSendAirtimeMutation,
@@ -68,9 +63,7 @@ export default function TransferSummary() {
         window.location.replace(
           generatePaymentLink({
             amount: recipientValueRef.current,
-            formattedAmount: formatPrice(recipientValueRef.current, {
-              fractionDigits: 2,
-            }),
+            formattedAmount: recipientValueRef.current.toFixed(2),
             ref: data.reference,
           })
         );

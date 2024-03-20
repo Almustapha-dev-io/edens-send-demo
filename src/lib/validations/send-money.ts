@@ -54,26 +54,41 @@ export const SenderDetailsSchema = z.object({
 
 export type TSenderDetails = z.infer<typeof SenderDetailsSchema>;
 
-export const SendMoneyAmountSchema = z.object({
-  amount: z
-    .number()
-    .positive('Amount must be greater than 0')
-    .max(300, 'Cannot transfer more than $300')
-    .or(
-      z.string().refine(
-        (value) => {
-          const parsedValue = +value;
-          return (
-            !isNaN(parsedValue) &&
-            isFinite(parsedValue) &&
-            parsedValue > 0 &&
-            parsedValue <= 300
-          );
-        },
-        { message: 'Enter a valid amount not more than $300' }
-      )
-    ),
-});
+export const SendMoneyAmountSchema = z
+  .object({
+    country: z.string().min(1),
+    amount: z
+      .number()
+      .positive('Amount must be greater than 0')
+      .or(
+        z.string().refine(
+          (value) => {
+            const parsedValue = +value;
+            return (
+              !isNaN(parsedValue) && isFinite(parsedValue) && parsedValue > 0
+            );
+          },
+          { message: 'Enter a valid amount' }
+        )
+      ),
+  })
+  .superRefine((data, ctx) => {
+    if (data.country === 'NG' && +data.amount > 2000) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['amount'],
+        message: 'Amount can not be more than $2,000.00',
+      });
+    }
+
+    if (data.country === 'LR' && +data.amount > 300) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['amount'],
+        message: 'Amount can not be more than $300.00',
+      });
+    }
+  });
 
 export type TSendMoneyAmount = z.infer<typeof SendMoneyAmountSchema>;
 
