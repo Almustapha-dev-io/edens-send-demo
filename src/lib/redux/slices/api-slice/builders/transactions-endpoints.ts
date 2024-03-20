@@ -31,6 +31,9 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
     }),
     invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
     transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
+    extraOptions: {
+      ignoreLogout: true,
+    },
   }),
 
   initiateAirtimeTransaction: builder.mutation<
@@ -44,5 +47,8 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
     }),
     invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
     transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
+    extraOptions: {
+      ignoreLogout: true,
+    },
   }),
 });

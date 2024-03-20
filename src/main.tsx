@@ -37,7 +37,7 @@ root.render(
     <PersistGate loading={null} persistor={persistor}>
       <ChakraProvider theme={chakraTheme}>
         <ToastContainer
-          position="top-right"
+          position="bottom-center"
           autoClose={7000}
           closeOnClick
           rtl={false}
