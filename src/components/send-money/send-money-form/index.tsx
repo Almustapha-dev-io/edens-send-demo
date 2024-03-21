@@ -85,6 +85,7 @@ export default function SendMoneyForm() {
     createTransactionsParamsMutation,
     isLoading,
     data: transactionParams,
+    reset: resetRequest,
   } = useCreateTransactionsParams({
     hideErrorMsg: true,
     hideSuccessMsg: true,
@@ -107,7 +108,7 @@ export default function SendMoneyForm() {
   );
 
   const submitHandler: SubmitHandler<TSendMoneyAmount> = (values) => {
-    if (!transactionParams) {
+    if (!transactionParams || !debouncedAmount) {
       toast('Enter your transaction details', {
         type: 'warning',
         position: 'bottom-center',
@@ -135,8 +136,13 @@ export default function SendMoneyForm() {
   const { isSuccess, data } = useGetUserLocation();
 
   useEffect(() => {
+    if (!debouncedAmount || !isValid) {
+      resetRequest();
+    }
+  }, [debouncedAmount, isValid, resetRequest]);
+
+  useEffect(() => {
     const subscription = watch((_values, { name }) => {
-      console.log({ _values });
       if (name === 'country' && allowReset.current) {
         dispatch(resetSendMoney());
       }

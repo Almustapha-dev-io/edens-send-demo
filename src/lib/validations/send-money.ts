@@ -59,14 +59,13 @@ export const SendMoneyAmountSchema = z
     country: z.string().min(1),
     amount: z
       .number()
-      .positive('Amount must be greater than 0')
+      .min(0)
       .or(
         z.string().refine(
           (value) => {
+            if (value === '') return true;
             const parsedValue = +value;
-            return (
-              !isNaN(parsedValue) && isFinite(parsedValue) && parsedValue > 0
-            );
+            return !isNaN(parsedValue) && isFinite(parsedValue);
           },
           { message: 'Enter a valid amount' }
         )
@@ -81,11 +80,11 @@ export const SendMoneyAmountSchema = z
       });
     }
 
-    if (data.country === 'LR' && +data.amount > 300) {
+    if (data.country === 'LR' && +data.amount > 400) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['amount'],
-        message: 'Amount can not be more than $300.00',
+        message: 'Amount can not be more than $400.00',
       });
     }
   });
