@@ -145,6 +145,16 @@ export default function SendMoneyForm() {
     const subscription = watch((_values, { name }) => {
       if (name === 'country' && allowReset.current) {
         dispatch(resetSendMoney());
+
+        const parsedAmount = _values.amount ? +_values.amount : 0;
+        if (
+          parsedAmount &&
+          !isNaN(parsedAmount) &&
+          isFinite(parsedAmount) &&
+          _values.country
+        ) {
+          createParams(+parsedAmount, _values.country);
+        }
       }
     });
 
@@ -152,7 +162,7 @@ export default function SendMoneyForm() {
       subscription.unsubscribe();
       allowReset.current = true;
     };
-  }, [watch, dispatch]);
+  }, [watch, dispatch, createParams]);
 
   const getDestinationCurrency = () => {
     const country = watch('country');

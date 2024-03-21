@@ -11,6 +11,7 @@ import { ReactNode } from 'react';
 
 import BankIcon from '@/components/icons/bank-icon';
 import WalletIcon from '@/components/icons/wallet-icon';
+import { useAppSelector } from '@/lib/redux';
 
 type TCategoryRadio = {
   label: string;
@@ -53,6 +54,10 @@ function CategoryRadio({ icon, label, ...props }: CategoryRadioProps) {
         _checked={{
           border: '1px solid #92CCBF',
           bg: '#EEFFFB',
+        }}
+        _disabled={{
+          cursor: 'not-allowed',
+          bg: 'gray.50',
         }}
         {...checkbox}
       >
@@ -99,6 +104,25 @@ export default function CategoryRadioGroup({ onChange, value }: Props) {
   });
 
   const group = getRootProps();
+  const { transactionParams } = useAppSelector(
+    (s) => s.transactionParams.sendMoney
+  );
+
+  const isDisabled = (radioValue: 'wallet' | 'bank') => {
+    if (!transactionParams) return true;
+    if (
+      radioValue === 'wallet' &&
+      Object.keys(transactionParams.recipientInstitutions.WALLETS).length === 0
+    )
+      return true;
+
+    if (
+      radioValue === 'bank' &&
+      Object.keys(transactionParams.recipientInstitutions.BANKS).length === 0
+    )
+      return true;
+    return false;
+  };
 
   return (
     <HStack w="full" spacing={{ base: 2, md: '21px' }} {...group}>
@@ -111,6 +135,7 @@ export default function CategoryRadioGroup({ onChange, value }: Props) {
             label={opt.label}
             icon={opt.icon}
             {...radio}
+            isDisabled={isDisabled(opt.value)}
           />
         );
       })}
