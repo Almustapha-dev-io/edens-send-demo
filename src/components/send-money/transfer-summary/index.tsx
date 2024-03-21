@@ -25,14 +25,20 @@ export default function TransferSummary() {
   } = useAppSelector((s) => s.transactionParams.sendMoney);
   const dispatch = useAppDispatch();
 
-  const totalAmount = useMemo(() => {
+  const actualAmount = useMemo(() => {
     if (!transactionParams || !amount) return 0;
 
     const parsedAmount = +amount;
     if (!isFinite(parsedAmount) || isNaN(parsedAmount)) return 0;
 
-    return parsedAmount + transactionParams.fee;
+    return parsedAmount;
   }, [amount, transactionParams]);
+
+  const totalAmount = useMemo(() => {
+    if (!transactionParams || !actualAmount) return 0;
+
+    return actualAmount + transactionParams.fee;
+  }, [actualAmount, transactionParams]);
 
   const { initiateSendMoneyMutation, data, isSuccess, isLoading } =
     useInitiateSendMoney({
@@ -85,7 +91,7 @@ export default function TransferSummary() {
     };
 
     const payload: InitiateSendTransactionDTO = {
-      amount: totalAmount,
+      amount: actualAmount,
       beneficiary_type: `${country}_${recipientDetails.category.toUpperCase()}`,
       fx_quotation_id: transactionParams.fxQuotationId,
       beneficiary_account_number: getAccountNumber(),
@@ -122,9 +128,12 @@ export default function TransferSummary() {
     recipientEmail,
     recipientName,
     secureTransferDetails,
-    totalAmount,
+    actualAmount,
     transactionParams,
   ]);
+
+  const actualAmountRef = useRef(actualAmount);
+  actualAmountRef.current = actualAmount;
 
   const totalAmountRef = useRef(totalAmount);
   totalAmountRef.current = totalAmount;
@@ -134,7 +143,7 @@ export default function TransferSummary() {
       if (window) {
         window.location.replace(
           generatePaymentLink({
-            amount: totalAmountRef.current,
+            amount: actualAmountRef.current,
             formattedAmount: totalAmountRef.current.toFixed(2),
             ref: data.reference,
           })

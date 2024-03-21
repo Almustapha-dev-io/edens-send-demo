@@ -37,7 +37,7 @@ const getBaseQueryWithLogout = (baseUrl: string) => {
       extraOptions.ignoreLogout;
 
     if (result.error && result.error.status === 401 && !ignoreLogout) {
-      toast('Your session expired!', {
+      toast('You have been logged out. Please login!', {
         type: 'error',
         toastId: 'session-expired',
       });

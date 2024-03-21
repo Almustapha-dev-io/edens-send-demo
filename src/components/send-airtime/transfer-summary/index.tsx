@@ -18,7 +18,7 @@ export default function TransferSummary() {
     (s) => s.transactionParams.sendAirtime
   );
 
-  const recipientValue = useMemo(() => {
+  const totalAmount = useMemo(() => {
     if (!recipientDetails) return 0;
     if (!amount) return 0;
 
@@ -38,7 +38,7 @@ export default function TransferSummary() {
     if (isLoading || !recipientDetails || !senderDetails) return;
 
     triggerRef.current = initiateSendAirtimeMutation({
-      amount: recipientValue,
+      amount: totalAmount,
       beneficiary_phone_number: recipientDetails.phoneNumber,
       bill_id: recipientDetails.network.value.bill_id,
       bill_provider_id: recipientDetails.network.value.biller_id,
@@ -49,12 +49,12 @@ export default function TransferSummary() {
     initiateSendAirtimeMutation,
     isLoading,
     recipientDetails,
-    recipientValue,
+    totalAmount,
     senderDetails,
   ]);
 
-  const recipientValueRef = useRef(recipientValue);
-  recipientValueRef.current = recipientValue;
+  const recipientValueRef = useRef(totalAmount);
+  recipientValueRef.current = totalAmount;
 
   useEffect(() => {
     if (!isLoading && data && isSuccess) {
@@ -103,7 +103,7 @@ export default function TransferSummary() {
             onClick={initiateSendAirtime}
             isLoading={isLoading}
           >
-            Pay {formatNumber(recipientValue, { fractionDigits: 2 })}
+            Pay {formatNumber(totalAmount, { fractionDigits: 2 })}
           </Button>
           <Button
             size="lg"
