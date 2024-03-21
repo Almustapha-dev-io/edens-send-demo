@@ -58,7 +58,6 @@ export default function TransferSummary() {
 
   useEffect(() => {
     if (!isLoading && data && isSuccess) {
-      // Navigate to payment gateway
       if (window) {
         window.location.replace(
           generatePaymentLink({
