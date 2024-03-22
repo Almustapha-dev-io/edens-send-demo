@@ -1,5 +1,7 @@
 import { Box, HStack, Link, Text, useBreakpointValue } from '@chakra-ui/react';
 
+import { privacyPolicy, termsUrl } from '@/lib/env';
+
 import NavigationTab from './navigation-tab';
 
 export default function Footer() {
@@ -35,8 +37,12 @@ export default function Footer() {
         align="center"
       >
         <HStack spacing="6">
-          <Link>Terms & Conditions</Link>
-          <Link>Privacy Policy</Link>
+          <Link isExternal href={termsUrl}>
+            Terms & Conditions
+          </Link>
+          <Link isExternal href={privacyPolicy}>
+            Privacy Policy
+          </Link>
         </HStack>
         <Text color="#C0C0C0" fontWeight="400">
           All Rights Reserved - {new Date().getFullYear()} &copy;Edens360

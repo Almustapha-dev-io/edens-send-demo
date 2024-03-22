@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
 import { useInitiateSendAirtime } from '@/hooks';
-import { formatNumber, generatePaymentLink } from '@/lib/helpers';
+import { formatPrice, generatePaymentLink } from '@/lib/helpers';
 import { useAppDispatch, useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
@@ -103,7 +103,7 @@ export default function TransferSummary() {
             onClick={initiateSendAirtime}
             isLoading={isLoading}
           >
-            Pay {formatNumber(totalAmount, { fractionDigits: 2 })}
+            Pay {formatPrice(totalAmount, { fractionDigits: 2 })}
           </Button>
           <Button
             size="lg"

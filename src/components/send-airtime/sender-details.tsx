@@ -54,6 +54,7 @@ export default function SenderDetails() {
     formState: { errors },
     handleSubmit,
     watch,
+    setValue,
   } = useForm<TSenderDetails>({
     resolver: zodResolver(SenderDetailsSchema),
     mode: 'all',
@@ -126,6 +127,20 @@ export default function SenderDetails() {
     }
   }, [isError, isLoading, navigate, error]);
 
+  useEffect(() => {
+    if (isAuth && user) {
+      const opts = {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      };
+      setValue('email', user.email, opts);
+      setValue('firstName', user.first_name, opts);
+      setValue('lastName', user.last_name, opts);
+      setValue('phoneNumber', user.phone_number, opts);
+    }
+  }, [isAuth, setValue, user]);
+
   return (
     <chakra.form w="519px" maxW="full" onSubmit={handleSubmit(submitHandler)}>
       <VStack w="full" spacing="6">
@@ -157,7 +172,7 @@ export default function SenderDetails() {
           </Heading>
 
           <SimpleGrid w="full" spacing="6" columns={{ base: 1, md: 2 }}>
-            <FormControl isInvalid={!!errors.firstName}>
+            <FormControl isInvalid={!!errors.firstName} isDisabled={isAuth}>
               <FormLabel>First Name</FormLabel>
               <Input
                 size="lg"
@@ -167,7 +182,7 @@ export default function SenderDetails() {
               <FormErrorMessage>{errors.firstName?.message}</FormErrorMessage>
             </FormControl>
 
-            <FormControl isInvalid={!!errors.lastName}>
+            <FormControl isInvalid={!!errors.lastName} isDisabled={isAuth}>
               <FormLabel>Last Name</FormLabel>
               <Input
                 size="lg"
@@ -182,7 +197,7 @@ export default function SenderDetails() {
             control={control}
             name="phoneNumber"
             render={({ field, fieldState }) => (
-              <FormControl isInvalid={!!fieldState.error}>
+              <FormControl isInvalid={!!fieldState.error} isDisabled={isAuth}>
                 <FormLabel>Phone number</FormLabel>
                 <PhoneNumberInput
                   id="phoneNumber"

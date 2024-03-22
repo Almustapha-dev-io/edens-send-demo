@@ -2,7 +2,7 @@ import { Button, Heading, HStack, VStack } from '@chakra-ui/react';
 import { useMemo } from 'react';
 
 import { useSendAirtimeContext } from '@/context/send-airtime';
-import { formatNumber } from '@/lib/helpers';
+import { formatPrice } from '@/lib/helpers';
 import { useAppSelector } from '@/lib/redux';
 import { SendAirtimePageState } from '@/types/enums';
 
@@ -35,7 +35,7 @@ export default function TransferDetails() {
           label="You send exactly"
           content={
             <HStack w="full" justify="space-between">
-              <span>{formatNumber(recipientValue, { fractionDigits: 2 })}</span>
+              <span>{formatPrice(recipientValue, { fractionDigits: 2 })}</span>
 
               <Button
                 size="sm"
@@ -56,7 +56,7 @@ export default function TransferDetails() {
         <SummaryItem label="Total Fees" content="0.00" />
         <SummaryItem
           label={`${recipientDetails?.phoneNumber ?? 'Recipient'} gets`}
-          content={formatNumber(recipientValue, { fractionDigits: 2 })}
+          content={formatPrice(recipientValue, { fractionDigits: 2 })}
         />
       </VStack>
     </VStack>
