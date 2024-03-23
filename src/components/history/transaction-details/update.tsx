@@ -48,6 +48,7 @@ export default function Update({ transaction }: Props) {
             align="flex-start"
             spacing="6"
             p="0"
+            key={i}
           >
             {!!p.timestamp && (
               <VStack mt="-4px" align="flex-start" spacing="0" color="#6A7891">
