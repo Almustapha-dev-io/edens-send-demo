@@ -18,7 +18,7 @@ import { toast } from 'react-toastify';
 
 import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
-import { formatNumber } from '@/lib/helpers';
+import { formatPrice } from '@/lib/helpers';
 import {
   setSendAirtimeAmount,
   useAppDispatch,
@@ -102,7 +102,7 @@ export default function AmountForm() {
     return (
       !isNaN(parsedValue) &&
       isFinite(parsedValue) &&
-      parsedValue > minAmount &&
+      parsedValue >= minAmount &&
       parsedValue <= maxAmount
     );
   }, [recipientDetails, value]);
@@ -132,7 +132,11 @@ export default function AmountForm() {
         fontWeight="700"
         textAlign="center"
       >
-        How much are you sending to {recipientDetails?.phoneNumber ?? '-'}?
+        How much are you sending to{' '}
+        {recipientDetails?.phoneNumber
+          ? `+${recipientDetails?.phoneNumber}`
+          : '-'}
+        ?
       </Heading>
 
       <Heading as="h2" fontSize="14px" fontWeight="400" textAlign="center">
@@ -178,10 +182,11 @@ export default function AmountForm() {
             </Box>
             <Text color="#979797" fontWeight="400" fontSize="14px">
               Max{' '}
-              {formatNumber(
+              {formatPrice(
                 recipientDetails
                   ? +recipientDetails.product.value.max_amount
-                  : MAX_AMOUNT
+                  : MAX_AMOUNT,
+                { fractionDigits: 2 }
               )}
             </Text>
           </HStack>

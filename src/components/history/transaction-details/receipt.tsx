@@ -1,7 +1,12 @@
-import { Box, Heading, VStack } from '@chakra-ui/react';
-import { ReactNode, useMemo } from 'react';
+import { Box, Button, Heading, Link, VStack } from '@chakra-ui/react';
+import { usePDF } from '@react-pdf/renderer';
+import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
+import { If, Then } from 'react-if';
 
+import { useUser } from '@/hooks';
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
+
+import ReceiptPDF from './receipt-pdf';
 
 type SummaryItemProps = {
   label: string;
@@ -50,66 +55,96 @@ export default function Receipt({ transaction }: Props) {
   );
   const accountCategory =
     transaction.beneficiary_wallet_name ?? transaction.beneficiary_type;
-  const name =
+  const accountNumber =
     transaction.beneficiary_account_number ??
     transaction.beneficiary_phone_number;
 
+  const user = useUser();
+
+  const anchorRef = useRef<HTMLAnchorElement>(null);
+  const [{ url, loading, error }, updatePDF] = usePDF({
+    document: <ReceiptPDF transaction={transaction} user={user} />,
+  });
+
+  const downloadHandler = useCallback(() => {
+    if (anchorRef.current) {
+      anchorRef.current.click();
+    }
+  }, []);
+
+  console.log({ error });
+
+  useEffect(() => {
+    updatePDF(<ReceiptPDF transaction={transaction} user={user} />);
+  }, [updatePDF, transaction, user]);
+
   return (
-    <VStack w="full" h="fit-content" spacing="8">
-      <VStack w="full" spacing="6" align="flex-start">
-        <Heading as="h3" fontWeight="700" fontSize="16px">
-          Recipient Details
-        </Heading>
+    <>
+      <If condition={!!url}>
+        <Then>
+          <Link isExternal href={url ?? ''} ref={anchorRef} hidden>
+            download receipt
+          </Link>
+        </Then>
+      </If>
+      <VStack w="full" h="fit-content" spacing="8">
+        <VStack w="full" spacing="6" align="flex-start">
+          <Heading as="h3" fontWeight="700" fontSize="16px">
+            Recipient Details
+          </Heading>
 
-        <VStack w="full" spacing="0">
-          <SummaryItem
-            label="Account Number"
-            content={`${name} | ${accountCategory ? snakeToFlat(accountCategory) : 'Airtime'}`}
-          />
-          <SummaryItem
-            label="Account Name"
-            content={transaction.beneficiary_name ?? '-'}
-          />
-          <SummaryItem
-            label="Email Address"
-            content={transaction.beneficiary_email ?? '-'}
-          />
+          <VStack w="full" spacing="0">
+            <SummaryItem
+              label="Account Number"
+              content={`${accountNumber} | ${accountCategory ? snakeToFlat(accountCategory) : 'Airtime'}`}
+            />
+            <SummaryItem
+              label="Account Name"
+              content={transaction.beneficiary_name ?? '-'}
+            />
+            <SummaryItem
+              label="Email Address"
+              content={transaction.beneficiary_email ?? '-'}
+            />
+          </VStack>
         </VStack>
-      </VStack>
 
-      <VStack w="full" spacing="6" align="flex-start">
-        <Heading as="h3" fontWeight="700" fontSize="16px">
-          Transfer Details
-        </Heading>
+        <VStack w="full" spacing="6" align="flex-start">
+          <Heading as="h3" fontWeight="700" fontSize="16px">
+            Transfer Details
+          </Heading>
 
-        <VStack w="full" spacing="0">
-          <SummaryItem
-            label="You send exactly"
-            content={formatPrice(amount + fee, {
-              fractionDigits: 2,
-            })}
-          />
-          <SummaryItem
-            label="Total fees"
-            content={formatPrice(fee, {
-              fractionDigits: 2,
-            })}
-          />
-          <SummaryItem
-            label="Brandon Wesley gets"
-            content={formatPrice(amount, { fractionDigits: 2 })}
-          />
+          <VStack w="full" spacing="0">
+            <SummaryItem
+              label="You send exactly"
+              content={formatPrice(amount + fee, {
+                fractionDigits: 2,
+              })}
+            />
+            <SummaryItem
+              label="Total fees"
+              content={formatPrice(fee, {
+                fractionDigits: 2,
+              })}
+            />
+            <SummaryItem
+              label={`${transaction.beneficiary_name ?? 'Recipient'} gets`}
+              content={formatPrice(amount, { fractionDigits: 2 })}
+            />
+          </VStack>
         </VStack>
+
+        <Button
+          w="full"
+          size="lg"
+          fontSize="14px"
+          variant={{ base: 'outline', lg: 'solid' }}
+          onClick={downloadHandler}
+          isDisabled={loading}
+        >
+          Download Receipt
+        </Button>
       </VStack>
-      {/* 
-      <Button
-        w="full"
-        size="lg"
-        fontSize="14px"
-        variant={{ base: 'outline', lg: 'solid' }}
-      >
-        Download Receipt
-      </Button> */}
-    </VStack>
+    </>
   );
 }

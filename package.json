@@ -15,6 +15,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "@hookform/resolvers": "^3.3.4",
+    "@react-pdf/renderer": "3.1.12",
     "@reduxjs/toolkit": "1.9.7",
     "@tanstack/react-table": "^8.13.2",
     "axios": "^1.6.7",

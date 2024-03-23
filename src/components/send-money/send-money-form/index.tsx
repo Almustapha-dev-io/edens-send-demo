@@ -350,8 +350,9 @@ export default function SendMoneyForm() {
             variant={{ base: 'outline', lg: 'solid' }}
             type="submit"
             isLoading={isLoading}
+            isDisabled={watch('country') === 'NG'}
           >
-            Continue
+            {watch('country') === 'NG' ? 'Coming soon...' : 'Continue'}
           </Button>
         </VStack>
       </VStack>
