@@ -66,6 +66,7 @@ type TTransactionProgressUpdate = {
 };
 
 type TTransaction = {
+  id: string;
   eden_send_client_id: string;
   reference: string;
   amount: string;

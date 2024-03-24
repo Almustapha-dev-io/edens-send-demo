@@ -76,7 +76,7 @@ export default function BankAccountNumber({
     if (isLoading) return;
 
     retryTransactionMutation({
-      transactionId: transaction.reference,
+      transactionId: transaction.id,
       beneficiary_account_number: value,
     });
   };

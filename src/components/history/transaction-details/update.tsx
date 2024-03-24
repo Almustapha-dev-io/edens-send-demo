@@ -93,16 +93,23 @@ export default function Update({ transaction }: Props) {
                 {p.message ?? '-'}
               </Text>
 
-              {p.status === false && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  fontWeight="400"
-                  onClick={onOpenRetry}
-                >
-                  Edit & Retry
-                </Button>
-              )}
+              <If
+                condition={
+                  i === transaction.progress_report.length - 1 &&
+                  p.status === false
+                }
+              >
+                <Then>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    fontWeight="400"
+                    onClick={onOpenRetry}
+                  >
+                    Edit & Retry
+                  </Button>
+                </Then>
+              </If>
             </VStack>
           </HStack>
         ))}

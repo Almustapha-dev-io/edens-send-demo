@@ -66,13 +66,13 @@ export default function Receipt({ transaction }: Props) {
     document: <ReceiptPDF transaction={transaction} user={user} />,
   });
 
+  console.log({ loading, url, error });
+
   const downloadHandler = useCallback(() => {
     if (anchorRef.current) {
       anchorRef.current.click();
     }
   }, []);
-
-  console.log({ error });
 
   useEffect(() => {
     updatePDF(<ReceiptPDF transaction={transaction} user={user} />);

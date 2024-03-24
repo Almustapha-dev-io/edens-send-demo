@@ -38,7 +38,12 @@ export default function MomoWalletPhone({
   transaction,
   walletType,
 }: Props) {
-  const [value, setValue] = useState(defaultValue ?? '');
+  const [value, setValue] = useState(() => {
+    const trCountry = countries.find((c) => c.isoCode2 === country);
+    if (!trCountry) return '';
+    const code = trCountry.countryCodes[0] ?? '';
+    return `${code}${defaultValue}`;
+  });
   const [debouncedPhone] = useDebounceValue(value, 200);
 
   const {
