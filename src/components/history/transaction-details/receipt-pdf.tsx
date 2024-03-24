@@ -1,6 +1,5 @@
 import {
   Document,
-  Font,
   Image,
   Page,
   StyleSheet,
@@ -9,24 +8,25 @@ import {
 } from '@react-pdf/renderer';
 import { format } from 'date-fns';
 
-import SatoshiBold from '@/fonts/satoshi/Satoshi-Bold.otf';
-import SatoshiRegular from '@/fonts/satoshi/Satoshi-Regular.otf';
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
-Font.register({
-  family: 'SatoshiFont',
-  fonts: [
-    {
-      src: SatoshiRegular,
-      fontWeight: 'normal',
-    },
+// import SatoshiBold from '../../../fonts/satoshi/Satoshi-Bold.otf';
+// import SatoshiRegular from '../../../fonts/satoshi/Satoshi-Regular.otf';
 
-    {
-      src: SatoshiBold,
-      fontWeight: 'bold',
-    },
-  ],
-});
+// Font.register({
+//   family: 'Satoshi',
+//   fonts: [
+//     {
+//       src: SatoshiRegular,
+//       fontWeight: 400,
+//     },
+
+//     {
+//       src: SatoshiBold,
+//       fontWeight: 700,
+//     },
+//   ],
+// });
 
 const styles = StyleSheet.create({
   page: {
@@ -97,8 +97,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#6A7891',
               }}
             >
@@ -111,8 +111,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                   color: '#6A7891',
                 }}
               >
@@ -121,8 +121,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '24px',
-                  fontWeight: 'bold',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 700,
+                  //   fontFamily: 'Satoshi',
                 }}
               >
                 {formatPrice(+transaction.amount, { fractionDigits: 2 })}
@@ -153,8 +153,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
                 style={{
                   textTransform: 'capitalize',
                   fontSize: '12px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                 }}
               >
                 {transaction.status.toLowerCase()}
@@ -173,8 +173,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#6A7891',
               }}
             >
@@ -183,8 +183,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -206,8 +206,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '16px',
-                fontWeight: 'bold',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 700,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -216,8 +216,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -237,8 +237,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '16px',
-                fontWeight: 'bold',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 700,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -249,8 +249,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                   color: '#6A7891',
                 }}
               >
@@ -259,8 +259,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                   color: '#002026',
                 }}
               >
@@ -272,8 +272,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                   color: '#6A7891',
                 }}
               >
@@ -282,8 +282,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
               <Text
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'normal',
-                  fontFamily: 'SatoshiFont',
+                  fontWeight: 400,
+                  //   fontFamily: 'Satoshi',
                   color: '#002026',
                 }}
               >
@@ -304,8 +304,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '16px',
-                fontWeight: 'bold',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 700,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -314,8 +314,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -334,8 +334,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '16px',
-                fontWeight: 'bold',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 700,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >
@@ -344,8 +344,8 @@ export default function ReceiptPDF({ transaction, user }: Props) {
             <Text
               style={{
                 fontSize: '14px',
-                fontWeight: 'normal',
-                fontFamily: 'SatoshiFont',
+                fontWeight: 400,
+                // fontFamily: 'Satoshi',
                 color: '#002026',
               }}
             >

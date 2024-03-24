@@ -3,13 +3,15 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input,
   VStack,
 } from '@chakra-ui/react';
+import { codes } from 'country-calling-code';
+import { parseNumber } from 'libphonenumber-js';
 import { useEffect, useMemo, useState } from 'react';
 
+import PhoneNumberInput from '@/components/ui/phone-number-input';
 import { PHONE_NUMBER_PATTERN } from '@/constants';
-import { useRetryTransaction } from '@/hooks';
+import { useOnMount, useRetryTransaction } from '@/hooks';
 
 type Props = {
   onClose(): void;
@@ -22,6 +24,7 @@ export default function AirtimePhoneNumber({
   onClose,
   transaction,
 }: Props) {
+  const [country, setCountry] = useState('');
   const [value, setValue] = useState(defaultValue ?? '');
   const [isTouched, setIsTouched] = useState(false);
 
@@ -37,10 +40,17 @@ export default function AirtimePhoneNumber({
     if (isLoading) return;
 
     retryTransactionMutation({
-      transactionId: transaction.reference,
+      transactionId: transaction.id,
       beneficiary_phone_number: value,
     });
   };
+
+  useOnMount(() => {
+    const parsedNumber = parseNumber(`+${defaultValue}`);
+    if (parsedNumber && 'country' in parsedNumber) {
+      setCountry(parsedNumber.country);
+    }
+  });
 
   useEffect(() => {
     if (isSuccess && !isLoading) {
@@ -52,12 +62,19 @@ export default function AirtimePhoneNumber({
     <>
       <FormControl isInvalid={isInvalid}>
         <FormLabel>Recipient Phone number</FormLabel>
-        <Input
+        <PhoneNumberInput
+          options={codes
+            .filter((c) => c.isoCode2 === country)
+            .map((c) => ({
+              label: c.country,
+              value: c.isoCode2,
+            }))}
+          country={country}
           size="lg"
           value={value}
-          onChange={(e) => {
+          onValueChange={(v) => {
             setIsTouched(true);
-            setValue(e.target.value);
+            setValue(v);
           }}
         />
         <FormErrorMessage>Enter a valid phone number</FormErrorMessage>
