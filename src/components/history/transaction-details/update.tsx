@@ -74,7 +74,7 @@ export default function Update({ transaction }: Props) {
               </If>
             </VStack>
             <VStack w="full" flex="1" align="flex-start">
-              <If condition={!!p.reason}>
+              <If condition={!!p.failure_reason}>
                 <Then>
                   <Heading
                     color={
@@ -85,7 +85,7 @@ export default function Update({ transaction }: Props) {
                     fontWeight="700"
                     fontSize="14px"
                   >
-                    {p.reason}
+                    {p.failure_reason}
                   </Heading>
                 </Then>
               </If>

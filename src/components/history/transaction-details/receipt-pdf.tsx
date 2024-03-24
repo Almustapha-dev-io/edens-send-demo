@@ -7,6 +7,7 @@ import {
   View,
 } from '@react-pdf/renderer';
 import { format } from 'date-fns';
+import { useMemo } from 'react';
 
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
@@ -84,6 +85,22 @@ export default function ReceiptPDF({ transaction, user }: Props) {
     transaction.beneficiary_account_number ??
     transaction.beneficiary_phone_number;
 
+  const amount = useMemo(
+    () =>
+      isFinite(+transaction.amount) && !isNaN(+transaction.amount)
+        ? +transaction.amount / 100
+        : 0,
+    [transaction.amount]
+  );
+
+  const fee = useMemo(
+    () =>
+      isFinite(+transaction.fee) && !isNaN(+transaction.fee)
+        ? +transaction.fee / 100
+        : 0,
+    [transaction.fee]
+  );
+
   return (
     <Document>
       <Page size="A5" style={styles.page}>
@@ -125,7 +142,9 @@ export default function ReceiptPDF({ transaction, user }: Props) {
                   //   fontFamily: 'Satoshi',
                 }}
               >
-                {formatPrice(+transaction.amount, { fractionDigits: 2 })}
+                {formatPrice(amount, {
+                  fractionDigits: 2,
+                })}
               </Text>
             </View>
 
@@ -188,9 +207,7 @@ export default function ReceiptPDF({ transaction, user }: Props) {
                 color: '#002026',
               }}
             >
-              {transaction.fee
-                ? formatPrice(+transaction.fee, { fractionDigits: 2 })
-                : '-'}
+              {transaction.fee ? formatPrice(fee, { fractionDigits: 2 }) : '-'}
             </Text>
           </View>
 

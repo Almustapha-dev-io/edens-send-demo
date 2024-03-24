@@ -62,11 +62,9 @@ export default function Receipt({ transaction }: Props) {
   const user = useUser();
 
   const anchorRef = useRef<HTMLAnchorElement>(null);
-  const [{ url, loading, error }, updatePDF] = usePDF({
+  const [{ url, loading }, updatePDF] = usePDF({
     document: <ReceiptPDF transaction={transaction} user={user} />,
   });
-
-  console.log({ loading, url, error });
 
   const downloadHandler = useCallback(() => {
     if (anchorRef.current) {

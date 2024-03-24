@@ -63,6 +63,7 @@ type TTransactionProgressUpdate = {
   message: string;
   reason?: string;
   status?: boolean;
+  failure_reason?: string;
 };
 
 type TTransaction = {
