@@ -74,24 +74,21 @@ export default function Update({ transaction }: Props) {
               </If>
             </VStack>
             <VStack w="full" flex="1" align="flex-start">
+              <Heading
+                fontWeight="700"
+                fontSize="14px"
+                color={p.status === false ? 'red.500' : '#000'}
+              >
+                {p.message}
+              </Heading>
+
               <If condition={!!p.failure_reason}>
                 <Then>
-                  <Heading
-                    color={
-                      transaction.status.toLowerCase() === 'failed'
-                        ? 'red.500'
-                        : '#1A1A2F'
-                    }
-                    fontWeight="700"
-                    fontSize="14px"
-                  >
-                    {p.failure_reason}
-                  </Heading>
+                  <Text fontSize="14px" fontWeight="400" color="#6A7891">
+                    {p.failure_reason ?? '-'}
+                  </Text>
                 </Then>
               </If>
-              <Text fontSize="14px" fontWeight="400" color="#6A7891">
-                {p.message ?? '-'}
-              </Text>
 
               <If
                 condition={
