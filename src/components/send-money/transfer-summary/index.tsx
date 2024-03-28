@@ -5,14 +5,14 @@ import { CARD_SHADOW } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
 import { useInitiateSendMoney } from '@/hooks';
 import { formatPrice, generatePaymentLink } from '@/lib/helpers';
-import { useAppDispatch, useAppSelector } from '@/lib/redux';
+import { useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
 import RecipientDetails from './recipient-details';
 import TransferDetails from './transfer-details';
 
 export default function TransferSummary() {
-  const { onPrevioussPage, resetPageState } = useSendMoneyContext();
+  const { onPrevioussPage } = useSendMoneyContext();
 
   const {
     amount,
@@ -23,7 +23,6 @@ export default function TransferSummary() {
     recipientName,
     secureTransferDetails,
   } = useAppSelector((s) => s.transactionParams.sendMoney);
-  const dispatch = useAppDispatch();
 
   const actualAmount = useMemo(() => {
     if (!transactionParams || !amount) return 0;
@@ -150,7 +149,7 @@ export default function TransferSummary() {
         );
       }
     }
-  }, [data, dispatch, isLoading, isSuccess, resetPageState]);
+  }, [data, isLoading, isSuccess]);
 
   return (
     <VStack w="519px" maxW="full" spacing="6">

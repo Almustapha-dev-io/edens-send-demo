@@ -5,15 +5,15 @@ import { CARD_SHADOW } from '@/constants';
 import { useSendAirtimeContext } from '@/context/send-airtime';
 import { useInitiateSendAirtime } from '@/hooks';
 import { formatPrice, generatePaymentLink } from '@/lib/helpers';
-import { useAppDispatch, useAppSelector } from '@/lib/redux';
+import { useAppSelector } from '@/lib/redux';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
 import RecipientDetails from './recipient-details';
 import TransferDetails from './transfer-details';
 
 export default function TransferSummary() {
-  const { onPreviousPage, resetPageState } = useSendAirtimeContext();
-  const dispatch = useAppDispatch();
+  const { onPreviousPage } = useSendAirtimeContext();
+
   const { recipientDetails, amount, senderDetails } = useAppSelector(
     (s) => s.transactionParams.sendAirtime
   );
@@ -68,7 +68,7 @@ export default function TransferSummary() {
         );
       }
     }
-  }, [data, dispatch, isLoading, isSuccess, resetPageState]);
+  }, [data, isLoading, isSuccess]);
 
   return (
     <VStack w="519px" maxW="full" spacing="6">

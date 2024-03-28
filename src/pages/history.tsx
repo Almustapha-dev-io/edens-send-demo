@@ -8,6 +8,9 @@ const Transactions = lazy(() => import('@/components/history/transactions'));
 const TransactionDetails = lazy(
   () => import('@/components/history/transaction-details')
 );
+const ResendTransaction = lazy(
+  () => import('@/components/history/resend-transaction')
+);
 
 export default function History() {
   return (
@@ -38,6 +41,15 @@ export default function History() {
           element={
             <Suspensed>
               <TransactionDetails />
+            </Suspensed>
+          }
+        />
+
+        <Route
+          path=":id/resend"
+          element={
+            <Suspensed>
+              <ResendTransaction />
             </Suspensed>
           }
         />

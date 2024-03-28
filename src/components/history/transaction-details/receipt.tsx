@@ -3,6 +3,8 @@ import { usePDF } from '@react-pdf/renderer';
 import { ReactNode, useCallback, useEffect, useMemo, useRef } from 'react';
 import { If, Then } from 'react-if';
 
+import RouterLink from '@/components/ui/router-link';
+import { RESEND_TRANSACTION } from '@/constants';
 import { useUser } from '@/hooks';
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
@@ -132,16 +134,29 @@ export default function Receipt({ transaction }: Props) {
           </VStack>
         </VStack>
 
-        <Button
-          w="full"
-          size="lg"
-          fontSize="14px"
-          variant={{ base: 'outline', lg: 'solid' }}
-          onClick={downloadHandler}
-          isDisabled={loading}
-        >
-          Download Receipt
-        </Button>
+        <VStack w="full" spacing="4">
+          <Button
+            w="full"
+            size="lg"
+            fontSize="14px"
+            variant={{ base: 'outline', lg: 'solid' }}
+            onClick={downloadHandler}
+            isDisabled={loading}
+          >
+            Download Receipt
+          </Button>
+          <RouterLink w="full" to={RESEND_TRANSACTION(transaction.reference)}>
+            <Button
+              w="full"
+              size="lg"
+              fontSize="14px"
+              variant="ghost"
+              isDisabled={loading}
+            >
+              Resend
+            </Button>
+          </RouterLink>
+        </VStack>
       </VStack>
     </>
   );
