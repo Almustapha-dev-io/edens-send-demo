@@ -5,6 +5,7 @@ const apiTagTypes: TApiTag[] = [
   'TRANSACTIONS',
   'TRANSACTION',
   'AIRTIME_PRODUCTS',
+  'PROFILE',
 ];
 
 export default apiTagTypes;

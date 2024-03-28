@@ -5,6 +5,7 @@ import { apiBaseUrl } from '@/lib/env';
 import getBaseQueryWithLogout from '../../base-query';
 import apiTagTypes from './api-tag-types';
 import {
+  getProfileEndpoints,
   getSendAirtimeEndpoints,
   getSendMoneyEndpoints,
   getTransactionsEndpoints,
@@ -17,6 +18,7 @@ const apiSlice = createApi({
     ...getSendMoneyEndpoints(build),
     ...getTransactionsEndpoints(build),
     ...getSendAirtimeEndpoints(build),
+    ...getProfileEndpoints(build),
   }),
 });
 
@@ -38,4 +40,6 @@ export const {
   useRetryTransactionsMutation,
   useGetAirtimeOperatorProductQuery,
   useLazyGetAirtimeOperatorProductQuery,
+  useGetProfileQuery,
+  useLazyGetProfileQuery,
 } = apiSlice;

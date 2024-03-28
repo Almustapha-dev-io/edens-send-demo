@@ -18,6 +18,10 @@ type TUser = {
   email_verified: boolean;
   created_at: string;
   updated_at: string;
+  sender_country: string | null;
+  source_of_funds: string | null;
+  purpose_of_transfer: string | null;
+  relation_with_beneficiary: string | null;
 };
 
 type CreateTransactionParamsDTO = {

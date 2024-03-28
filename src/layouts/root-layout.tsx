@@ -1,10 +1,33 @@
-import { Box, Flex } from '@chakra-ui/react';
-import { PropsWithChildren } from 'react';
+import { Box, Center, Flex } from '@chakra-ui/react';
+import { PropsWithChildren, useCallback, useEffect } from 'react';
 
 import Footer from '@/components/shared/footer';
 import Header from '@/components/shared/header';
+import { Loader } from '@/components/ui/loader';
+import { useIsAuthenticated } from '@/hooks';
+import { useLazyGetProfileQuery } from '@/lib/redux';
 
 export default function RootLayout({ children }: PropsWithChildren) {
+  const isAuth = useIsAuthenticated();
+  const [getUserQuery, { isLoading }] = useLazyGetProfileQuery();
+
+  const getUser = useCallback(() => {
+    if (!isAuth) return;
+    getUserQuery();
+  }, [getUserQuery, isAuth]);
+
+  useEffect(() => {
+    getUser();
+  }, [getUser]);
+
+  if (isLoading) {
+    return (
+      <Center w="full" h="100vh">
+        <Loader />
+      </Center>
+    );
+  }
+
   return (
     <Flex
       w="full"

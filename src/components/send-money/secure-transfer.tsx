@@ -22,6 +22,7 @@ import {
   TRANSFER_PURPOSE,
 } from '@/constants';
 import { useSendMoneyContext } from '@/context/send-money';
+import { useIsAuthenticated, useUser } from '@/hooks';
 import {
   setSecureTransferDetails,
   useAppDispatch,
@@ -44,12 +45,15 @@ export default function SecureTransfer() {
   const formDetails = useAppSelector(
     (s) => s.transactionParams.sendMoney.secureTransferDetails ?? {}
   );
+  const isAuth = useIsAuthenticated();
+  const user = useUser();
 
   const {
     register,
     control,
     watch,
     handleSubmit,
+    setValue,
     formState: { errors, isValid },
   } = useForm<TSecureTransferSchema>({
     resolver: zodResolver(SecureTransferSchema),
@@ -79,6 +83,66 @@ export default function SecureTransfer() {
       subscription.unsubscribe();
     };
   }, [dispatch, watch]);
+
+  useEffect(() => {
+    if (isAuth && user) {
+      const opts = {
+        shouldDirty: true,
+        shouldTouch: true,
+        shouldValidate: true,
+      };
+
+      if (user.sender_country) {
+        const senderCountry = countries.find(
+          (c) => c.value.toLowerCase() === user.sender_country?.toLowerCase()
+        );
+
+        if (senderCountry) {
+          setValue('senderCountry', senderCountry, opts);
+        }
+      }
+
+      if (user.source_of_funds) {
+        const sourceOfFunds = SOURCE_OF_FUNDS.find(
+          (s) => s.toLowerCase() === user.source_of_funds?.toLowerCase()
+        );
+
+        if (!sourceOfFunds) {
+          setValue('sourceOfFunds', 'others', opts);
+          setValue('otherSourceOfFunds', user.source_of_funds, opts);
+        } else {
+          setValue('sourceOfFunds', sourceOfFunds.toLowerCase(), opts);
+        }
+      }
+
+      if (user.relation_with_beneficiary) {
+        const relationship = RELATIONSHIPS.find(
+          (s) =>
+            s.toLowerCase() === user.relation_with_beneficiary?.toLowerCase()
+        );
+
+        if (!relationship) {
+          setValue('relationship', 'others', opts);
+          setValue('otherRelationship', user.relation_with_beneficiary, opts);
+        } else {
+          setValue('relationship', relationship.toLowerCase(), opts);
+        }
+      }
+
+      if (user.purpose_of_transfer) {
+        const purpose = TRANSFER_PURPOSE.find(
+          (s) => s.toLowerCase() === user.purpose_of_transfer?.toLowerCase()
+        );
+
+        if (!purpose) {
+          setValue('transferPurpose', 'others', opts);
+          setValue('otherTransferPurpose', user.purpose_of_transfer, opts);
+        } else {
+          setValue('transferPurpose', purpose.toLowerCase(), opts);
+        }
+      }
+    }
+  }, [isAuth, setValue, user]);
 
   return (
     <chakra.form w="519px" maxW="full" onSubmit={handleSubmit(submitHandler)}>

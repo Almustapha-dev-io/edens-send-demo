@@ -29,7 +29,7 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
       method: HttpMethods.POST,
       body,
     }),
-    invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
+    invalidatesTags: ['TRANSACTION', 'TRANSACTIONS', 'PROFILE'],
     transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
     extraOptions: {
       ignoreLogout: true,
@@ -45,7 +45,7 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
       method: HttpMethods.POST,
       body,
     }),
-    invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
+    invalidatesTags: ['TRANSACTION', 'TRANSACTIONS', 'PROFILE'],
     transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
     extraOptions: {
       ignoreLogout: true,
@@ -59,7 +59,7 @@ export const getTransactionsEndpoints = (builder: TAppEndpointBuilder) => ({
         method: HttpMethods.PATCH,
         body,
       }),
-      invalidatesTags: ['TRANSACTION', 'TRANSACTIONS'],
+      invalidatesTags: ['TRANSACTION', 'TRANSACTIONS', 'PROFILE'],
       transformResponse: (res: TServerResponse<TInitiateTransactionRes>) => res,
       extraOptions: {
         ignoreLogout: true,

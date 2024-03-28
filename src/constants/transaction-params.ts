@@ -27,5 +27,4 @@ export const RELATIONSHIPS = [
   'Business Associate',
   'Employee',
   'Charitable Organization',
-  'Others',
 ];
