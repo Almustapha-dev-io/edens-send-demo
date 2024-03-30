@@ -54,7 +54,7 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
             to={RESEND_TRANSACTION(transaction.reference)}
             onClick={(e) => e.stopPropagation()}
           >
-            <Button size="xs" minH="28px" bg="#F0F0F0" fontWeight="400" px="4">
+            <Button size="xs" minH="28px" fontWeight="400" px="4">
               Resend
             </Button>
           </RouterLink>
