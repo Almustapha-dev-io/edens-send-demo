@@ -50,15 +50,11 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
         <HStack w="full" spacing="4" justify="space-between">
           <TransactionType type={snakeToFlat(transaction.type).toLowerCase()} />
 
-          <RouterLink to={RESEND_TRANSACTION(transaction.reference)}>
-            <Button
-              size="xs"
-              minH="28px"
-              colorScheme="gray"
-              bg="#F0F0F0"
-              fontWeight="400"
-              px="4"
-            >
+          <RouterLink
+            to={RESEND_TRANSACTION(transaction.reference)}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button size="xs" minH="28px" bg="#F0F0F0" fontWeight="400" px="4">
               Resend
             </Button>
           </RouterLink>
