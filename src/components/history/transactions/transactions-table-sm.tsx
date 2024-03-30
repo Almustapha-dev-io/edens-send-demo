@@ -15,7 +15,8 @@ import CustomPaginator from '@/components/ui/custom-paginator';
 import ErrorPlaceholder from '@/components/ui/error-placeholder';
 import { Loader } from '@/components/ui/loader';
 import NoData from '@/components/ui/no-data';
-import { TRANSACTION_DETAILS } from '@/constants';
+import RouterLink from '@/components/ui/router-link';
+import { RESEND_TRANSACTION, TRANSACTION_DETAILS } from '@/constants';
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
 import TransactionStatus from './transaction-status';
@@ -46,7 +47,22 @@ function TransactionCard({ transaction }: { transaction: TTransaction }) {
         spacing="4"
         align="flex-start"
       >
-        <TransactionType type={snakeToFlat(transaction.type).toLowerCase()} />
+        <HStack w="full" spacing="4" justify="space-between">
+          <TransactionType type={snakeToFlat(transaction.type).toLowerCase()} />
+
+          <RouterLink to={RESEND_TRANSACTION(transaction.reference)}>
+            <Button
+              size="xs"
+              minH="28px"
+              colorScheme="gray"
+              bg="#F0F0F0"
+              fontWeight="400"
+              px="4"
+            >
+              Resend
+            </Button>
+          </RouterLink>
+        </HStack>
 
         <HStack w="full" justify="space-between" spacing="6">
           <VStack

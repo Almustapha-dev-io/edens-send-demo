@@ -1,12 +1,13 @@
-import { Button, Heading, VStack } from '@chakra-ui/react';
-import { useEffect, useMemo, useRef } from 'react';
+import { Button, Heading, useDisclosure, VStack } from '@chakra-ui/react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 import RouterLink from '@/components/ui/router-link';
 import { CARD_SHADOW } from '@/constants';
-import { useInitiateSendMoney } from '@/hooks';
+import { useCreateTransactionsParams, useInitiateSendMoney } from '@/hooks';
 import { formatPrice, generatePaymentLink, snakeToFlat } from '@/lib/helpers';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
+import ExchangeRateUpdate from './exchange-rate-update';
 import RecipientDetails from './recipient-details';
 import TransferDetails from './transfer-details';
 
@@ -29,17 +30,50 @@ export default function CashTransactionSummary({ transaction }: Props) {
     [transaction.amount, transaction.fee]
   );
 
+  const triggerRef = useRef<TMutationCreatorResult>();
+
+  const {
+    isOpen: isConfirmRateOpen,
+    onClose: onCloseConfirmRate,
+    onOpen: onOpenConfirmRate,
+  } = useDisclosure();
+
+  const isNgTransaction = useMemo(() => {
+    if (!transaction.beneficiary_type) return false;
+    const parts = transaction.beneficiary_type.split('_');
+    return parts[0]?.toLowerCase() === 'ng';
+  }, [transaction.beneficiary_type]);
+
+  const {
+    createTransactionsParamsMutation,
+    isLoading: isLoadingTrParams,
+    data: transactionParams,
+    isSuccess: isTrParamsSuccess,
+  } = useCreateTransactionsParams({
+    hideErrorMsg: true,
+    hideSuccessMsg: true,
+  });
+
+  const createParams = useCallback(() => {
+    if (triggerRef.current) triggerRef.current.abort();
+
+    triggerRef.current = createTransactionsParamsMutation({
+      amount: formattedAmount.amount,
+      beneficiary_country: 'NG',
+    });
+  }, [createTransactionsParamsMutation, formattedAmount.amount]);
+
   const { initiateSendMoneyMutation, data, isSuccess, isLoading } =
     useInitiateSendMoney({
       hideSuccessMsg: true,
     });
 
-  const triggerRef = useRef<TMutationCreatorResult>();
   const initiateSendMoney = () => {
     const payload: InitiateSendTransactionDTO = {
       amount: formattedAmount.amount,
       beneficiary_type: transaction.beneficiary_type ?? '',
-      fx_quotation_id: '',
+      fx_quotation_id:
+        transactionParams?.transactionParameters.fxQuotationId ?? '',
       beneficiary_account_number: transaction.beneficiary_account_number ?? '',
       beneficiary_name: transaction.beneficiary_name ?? '',
       beneficiary_email: transaction.beneficiary_email ?? '',
@@ -63,7 +97,30 @@ export default function CashTransactionSummary({ transaction }: Props) {
   formattedAmountRef.current = formattedAmount;
 
   useEffect(() => {
-    if (!isLoading && data && isSuccess) {
+    if (isNgTransaction) {
+      createParams();
+    }
+  }, [createParams, isNgTransaction]);
+
+  useEffect(() => {
+    if (
+      !isLoadingTrParams &&
+      !isLoading &&
+      isTrParamsSuccess &&
+      transactionParams
+    ) {
+      onOpenConfirmRate();
+    }
+  }, [
+    isLoading,
+    isLoadingTrParams,
+    isTrParamsSuccess,
+    onOpenConfirmRate,
+    transactionParams,
+  ]);
+
+  useEffect(() => {
+    if (!isLoading && data && isSuccess && !isLoadingTrParams) {
       if (window) {
         window.location.replace(
           generatePaymentLink({
@@ -76,7 +133,7 @@ export default function CashTransactionSummary({ transaction }: Props) {
         );
       }
     }
-  }, [data, isLoading, isSuccess]);
+  }, [data, isLoading, isLoadingTrParams, isSuccess]);
 
   const accountNumber = useMemo(() => {
     const acc = transaction.beneficiary_account_number ?? '';
@@ -96,65 +153,94 @@ export default function CashTransactionSummary({ transaction }: Props) {
     transaction.beneficiary_wallet_name,
   ]);
 
+  const recipientValue = useMemo(() => {
+    if (!transactionParams) return;
+    if (!formattedAmount.amount) return;
+
+    const params = {
+      fractionDigits: 2,
+      currency: transactionParams.transactionParameters.destinationCurrency,
+      locale:
+        transactionParams.transactionParameters.destinationCurrency === 'USD'
+          ? 'en-US'
+          : 'en-NG',
+    };
+
+    return formatPrice(
+      formattedAmount.amount *
+        transactionParams.transactionParameters.exchangeRate,
+      params
+    );
+  }, [formattedAmount.amount, transactionParams]);
+
   return (
-    <VStack w="519px" maxW="full" spacing="6">
-      <Heading
-        as="h1"
-        fontSize={{ base: '24px', md: '36px' }}
-        fontWeight="700"
-        textAlign="center"
-      >
-        See your transfer summary
-      </Heading>
+    <>
+      <ExchangeRateUpdate
+        isOpen={isConfirmRateOpen}
+        onClose={onCloseConfirmRate}
+        transaction={transaction}
+        params={transactionParams}
+      />
+      <VStack w="519px" maxW="full" spacing="6">
+        <Heading
+          as="h1"
+          fontSize={{ base: '24px', md: '36px' }}
+          fontWeight="700"
+          textAlign="center"
+        >
+          See your transfer summary
+        </Heading>
 
-      <VStack
-        align="flex-start"
-        w="full"
-        shadow={{ base: 'none', lg: CARD_SHADOW }}
-        rounded={{ base: 'none', lg: '20px' }}
-        bg={{ base: 'transparent', lg: '#fff' }}
-        spacing="8"
-        px={{ base: 0, lg: '30px' }}
-        py={{ base: 2, md: 10 }}
-      >
-        <RecipientDetails
-          accountName={transaction.beneficiary_name ?? '-'}
-          accountNumber={accountNumber}
-          emailAddress={transaction.beneficiary_email ?? '-'}
-        />
-        <TransferDetails
-          amount={formattedAmount.amount}
-          fee={formattedAmount.fee}
-          recipientName={transaction.beneficiary_name ?? '-'}
-        />
+        <VStack
+          align="flex-start"
+          w="full"
+          shadow={{ base: 'none', lg: CARD_SHADOW }}
+          rounded={{ base: 'none', lg: '20px' }}
+          bg={{ base: 'transparent', lg: '#fff' }}
+          spacing="8"
+          px={{ base: 0, lg: '30px' }}
+          py={{ base: 2, md: 10 }}
+        >
+          <RecipientDetails
+            accountName={transaction.beneficiary_name ?? '-'}
+            accountNumber={accountNumber}
+            emailAddress={transaction.beneficiary_email ?? '-'}
+          />
+          <TransferDetails
+            recipientValue={recipientValue}
+            amount={formattedAmount.amount}
+            fee={formattedAmount.fee}
+            recipientName={transaction.beneficiary_name ?? '-'}
+          />
 
-        <VStack w="full" spacing="4">
-          <Button
-            size="lg"
-            fontSize="14px"
-            w="full"
-            variant={{ base: 'outline', lg: 'solid' }}
-            onClick={initiateSendMoney}
-            isLoading={isLoading}
-          >
-            Pay{' '}
-            {formatPrice(formattedAmount.amount, {
-              fractionDigits: 2,
-            })}
-          </Button>
-          <RouterLink w="full" to=".." relative="path">
+          <VStack w="full" spacing="4">
             <Button
               size="lg"
               fontSize="14px"
               w="full"
-              variant="ghost"
-              isDisabled={isLoading}
+              variant={{ base: 'outline', lg: 'solid' }}
+              onClick={initiateSendMoney}
+              isLoading={isLoading || isLoadingTrParams}
             >
-              Back
+              Pay{' '}
+              {formatPrice(formattedAmount.amount, {
+                fractionDigits: 2,
+              })}
             </Button>
-          </RouterLink>
+            <RouterLink w="full" to=".." relative="path">
+              <Button
+                size="lg"
+                fontSize="14px"
+                w="full"
+                variant="ghost"
+                isDisabled={isLoading || isLoadingTrParams}
+              >
+                Back
+              </Button>
+            </RouterLink>
+          </VStack>
         </VStack>
       </VStack>
-    </VStack>
+    </>
   );
 }

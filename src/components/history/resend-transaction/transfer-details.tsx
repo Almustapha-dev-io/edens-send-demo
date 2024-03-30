@@ -8,9 +8,15 @@ type Props = {
   recipientName?: string;
   fee: number;
   amount: number;
+  recipientValue?: string;
 };
 
-export default function TransferDetails({ amount, fee, recipientName }: Props) {
+export default function TransferDetails({
+  amount,
+  fee,
+  recipientName,
+  recipientValue,
+}: Props) {
   return (
     <VStack w="full" align="flex-start">
       <Heading fontWeight="700" fontSize="16px">
@@ -30,7 +36,7 @@ export default function TransferDetails({ amount, fee, recipientName }: Props) {
         />
         <SummaryItem
           label={`${recipientName ?? 'Recipient'} gets`}
-          content={formatPrice(amount, { fractionDigits: 2 })}
+          content={recipientValue ?? formatPrice(amount, { fractionDigits: 2 })}
         />
       </VStack>
     </VStack>

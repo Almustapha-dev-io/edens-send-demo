@@ -1,11 +1,12 @@
-import { HStack, Text, VStack } from '@chakra-ui/react';
+import { Button, HStack, Text, VStack } from '@chakra-ui/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { DataTable } from '@/components/ui/datatables';
-import { TRANSACTION_DETAILS } from '@/constants';
+import RouterLink from '@/components/ui/router-link';
+import { RESEND_TRANSACTION, TRANSACTION_DETAILS } from '@/constants';
 import { formatPrice, snakeToFlat } from '@/lib/helpers';
 
 import TransactionStatus from './transaction-status';
@@ -94,6 +95,30 @@ export default function TransactionsTableLg({
           <HStack w="full" justify="flex-end">
             <TransactionStatus status={row.status} />
           </HStack>
+        ),
+      },
+      {
+        header: 'Action',
+        cell: (info) => info.getValue(),
+        meta: {
+          isNumeric: true,
+        },
+        accessorFn: (row) => (
+          <RouterLink
+            to={RESEND_TRANSACTION(row.reference)}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              size="xs"
+              minH="28px"
+              colorScheme="gray"
+              bg="#F0F0F0"
+              fontWeight="400"
+              px="4"
+            >
+              Resend
+            </Button>
+          </RouterLink>
         ),
       },
     ],
