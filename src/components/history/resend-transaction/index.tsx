@@ -1,4 +1,4 @@
-import { Center, Flex, VStack } from '@chakra-ui/react';
+import { Button, Center, Flex, Heading, VStack } from '@chakra-ui/react';
 import { useCallback, useEffect } from 'react';
 import { Else, If, Then } from 'react-if';
 import { useParams } from 'react-router-dom';
@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom';
 import ErrorPlaceholder from '@/components/ui/error-placeholder';
 import { Loader } from '@/components/ui/loader';
 import NoData from '@/components/ui/no-data';
+import RouterLink from '@/components/ui/router-link';
+import { LOGIN } from '@/constants';
 import { useIsAuthenticated } from '@/hooks';
 import { useLazyGetTransactionQuery } from '@/lib/redux';
 
@@ -74,16 +76,43 @@ export default function ResendTransaction() {
         align="center"
         pos="relative"
       >
-        {!!data && (
-          <If condition={data.transaction.type.toLowerCase() === 'airtime'}>
-            <Then>
-              <AirtimeSummary transaction={data.transaction} />
-            </Then>
-            <Else>
-              <CashTransactionSummary transaction={data.transaction} />
-            </Else>
-          </If>
-        )}
+        <If condition={isAuth}>
+          <Then>
+            {!!data && (
+              <If condition={data.transaction.type.toLowerCase() === 'airtime'}>
+                <Then>
+                  <AirtimeSummary transaction={data.transaction} />
+                </Then>
+                <Else>
+                  <CashTransactionSummary transaction={data.transaction} />
+                </Else>
+              </If>
+            )}
+          </Then>
+          <Else>
+            <Center w="full" minH="250px">
+              <VStack spacing="4">
+                <Heading
+                  fontWeight="500"
+                  maxW={{ base: '300px', lg: '400px' }}
+                  fontSize={{ base: '20px', lg: '24' }}
+                  textAlign="center"
+                >
+                  Login to resend transaction
+                </Heading>
+                <RouterLink to={LOGIN}>
+                  <Button
+                    size="lg"
+                    minW="150px"
+                    variant={{ base: 'outline', lg: 'solid' }}
+                  >
+                    Login
+                  </Button>
+                </RouterLink>
+              </VStack>
+            </Center>
+          </Else>
+        </If>
       </Flex>
     </VStack>
   );
