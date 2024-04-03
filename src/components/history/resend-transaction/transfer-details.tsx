@@ -1,5 +1,7 @@
-import { Heading, VStack } from '@chakra-ui/react';
+import { Button, Heading, HStack, VStack } from '@chakra-ui/react';
 
+import RouterLink from '@/components/ui/router-link';
+import { SEND_AIRTIME_ROUTE, SEND_MONEY_ROUTE } from '@/constants';
 import { formatPrice } from '@/lib/helpers';
 
 import SummaryItem from './summary-item';
@@ -9,6 +11,7 @@ type Props = {
   fee: number;
   amount: number;
   recipientValue?: string;
+  type: 'airtime' | 'cash';
 };
 
 export default function TransferDetails({
@@ -16,6 +19,7 @@ export default function TransferDetails({
   fee,
   recipientName,
   recipientValue,
+  type,
 }: Props) {
   return (
     <VStack w="full" align="flex-start">
@@ -26,7 +30,29 @@ export default function TransferDetails({
       <VStack w="full" spacing="0">
         <SummaryItem
           label="You send exactly"
-          content={formatPrice(amount + fee, { fractionDigits: 2 })}
+          content={
+            <HStack w="full" justify="space-between">
+              <span>{formatPrice(amount + fee, { fractionDigits: 2 })}</span>
+
+              <RouterLink
+                w="fit-content"
+                to={type === 'cash' ? SEND_MONEY_ROUTE : SEND_AIRTIME_ROUTE}
+              >
+                <Button
+                  size="sm"
+                  fontWeight="400"
+                  fontSize="13px"
+                  variant="ghost"
+                  bg="#E9F5F2"
+                  _hover={{
+                    bg: 'primary.50',
+                  }}
+                >
+                  Change
+                </Button>
+              </RouterLink>
+            </HStack>
+          }
         />
         <SummaryItem
           label="Total Fees"
