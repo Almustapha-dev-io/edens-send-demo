@@ -207,6 +207,7 @@ export default function CashTransactionSummary({ transaction }: Props) {
             emailAddress={transaction.beneficiary_email ?? '-'}
           />
           <TransferDetails
+            type="cash"
             recipientValue={recipientValue}
             amount={formattedAmount.amount}
             fee={formattedAmount.fee}
@@ -223,7 +224,7 @@ export default function CashTransactionSummary({ transaction }: Props) {
               isLoading={isLoading || isLoadingTrParams}
             >
               Pay{' '}
-              {formatPrice(formattedAmount.amount, {
+              {formatPrice(formattedAmount.amount + formattedAmount.fee, {
                 fractionDigits: 2,
               })}
             </Button>

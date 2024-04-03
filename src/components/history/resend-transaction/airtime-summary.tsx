@@ -108,6 +108,7 @@ export default function AirtimeSummary({ transaction }: Props) {
         />
 
         <TransferDetails
+          type="airtime"
           amount={formattedAmount.amount}
           fee={formattedAmount.fee}
           recipientName={transaction.beneficiary_name ?? '-'}
@@ -123,7 +124,7 @@ export default function AirtimeSummary({ transaction }: Props) {
             isLoading={isLoading}
           >
             Pay{' '}
-            {formatPrice(formattedAmount.amount, {
+            {formatPrice(formattedAmount.amount + formattedAmount.fee, {
               fractionDigits: 2,
             })}
           </Button>
