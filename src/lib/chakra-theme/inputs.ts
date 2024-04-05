@@ -5,7 +5,7 @@ const inputStyles = defineStyleConfig({
     outline: {
       field: {
         rounded: '10px',
-        fontSize: 'sm',
+        fontSize: { base: '16px', md: 'sm' },
         _focusVisible: {
           boxShadow: '0 0 0 1px #102E34',
           borderColor: '#102E34',
@@ -15,7 +15,7 @@ const inputStyles = defineStyleConfig({
     filled: {
       field: {
         rounded: '10px',
-        fontSize: 'sm',
+        fontSize: { base: '16px', md: 'sm' },
         _focusVisible: {
           boxShadow: '0 0 0 1px #102E34',
           borderColor: '#102E34',
@@ -29,7 +29,7 @@ const textAreaStyles = defineStyleConfig({
   variants: {
     outline: {
       rounded: '10px',
-      fontSize: 'sm',
+      fontSize: { base: '16px', md: 'sm' },
       _focusVisible: {
         boxShadow: '0 0 0 1px #102E34',
         borderColor: '#102E34',
@@ -37,7 +37,7 @@ const textAreaStyles = defineStyleConfig({
     },
     filled: {
       rounded: '10px',
-      fontSize: 'sm',
+      fontSize: { base: '16px', md: 'sm' },
       _focusVisible: {
         boxShadow: '0 0 0 1px #102E34',
         borderColor: '#102E34',
