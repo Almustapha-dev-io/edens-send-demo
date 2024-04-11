@@ -42,4 +42,5 @@ export const {
   useLazyGetAirtimeOperatorProductQuery,
   useGetProfileQuery,
   useLazyGetProfileQuery,
+  useResendAccountVerificationMutation,
 } = apiSlice;

@@ -1,7 +1,7 @@
+import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Avatar,
   Box,
-  Button,
   HStack,
   Image,
   Menu,
@@ -11,6 +11,7 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { Else, If, Then } from 'react-if';
+import { useNavigate } from 'react-router-dom';
 
 import { useIsAuthenticated, useUser } from '@/hooks';
 import { signOut, useAppDispatch } from '@/lib/redux';
@@ -25,6 +26,7 @@ export default function Header() {
   const user = useUser();
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const logoutHandler = () => {
     dispatch(signOut());
@@ -75,11 +77,43 @@ export default function Header() {
               </Menu>
             </Then>
             <Else>
-              <RouterLink to="?login=true">
-                <Button size="md" variant="link" leftIcon={<CircleUserIcon />}>
-                  Login
-                </Button>
-              </RouterLink>
+              <Menu>
+                {({ isOpen }) => (
+                  <>
+                    <MenuButton>
+                      <HStack spacing="1">
+                        <CircleUserIcon width="24px" height="24px" />
+                        <ChevronDownIcon
+                          style={{
+                            transition: 'all 0.2s',
+                            transform: isOpen
+                              ? 'rotate(180deg)'
+                              : 'rotate(0deg)',
+                          }}
+                        />
+                      </HStack>
+                    </MenuButton>
+                    <MenuList>
+                      <MenuItem
+                        fontWeight="500"
+                        onClick={() => {
+                          navigate('?login=true');
+                        }}
+                      >
+                        Log In
+                      </MenuItem>
+                      <MenuItem
+                        fontWeight="500"
+                        onClick={() => {
+                          navigate('?signup=true');
+                        }}
+                      >
+                        Create an account
+                      </MenuItem>
+                    </MenuList>
+                  </>
+                )}
+              </Menu>
             </Else>
           </If>
         </HStack>

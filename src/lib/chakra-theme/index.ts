@@ -10,6 +10,7 @@ import { APP_FONT } from '@/constants';
 
 import colors from './colors';
 import { inputStyles, textAreaStyles } from './inputs';
+import { defineMenuMultiStyleConfig, menuStyle } from './menu';
 import modalStyles from './overlays';
 import { popoverTheme } from './popper';
 
@@ -38,6 +39,11 @@ const components: ThemeComponents = {
   Textarea: textAreaStyles,
   Modal: modalStyles,
   Popover: popoverTheme,
+  Menu: defineMenuMultiStyleConfig({
+    baseStyle: {
+      ...menuStyle,
+    },
+  }),
 };
 
 const chakraTheme = extendTheme(

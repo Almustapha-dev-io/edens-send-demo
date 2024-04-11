@@ -1,3 +1,5 @@
+import { HttpMethods } from '@/constants';
+
 import { setUser } from '../..';
 import { TAppEndpointBuilder } from '../types';
 
@@ -16,5 +18,13 @@ export const getProfileEndpoints = (builder: TAppEndpointBuilder) => ({
         console.error(error);
       }
     },
+  }),
+
+  resendAccountVerification: builder.mutation<unknown, string>({
+    query: (email) => ({
+      url: '/api/v1/eden_send/auth/resend',
+      body: { email },
+      method: HttpMethods.POST,
+    }),
   }),
 });

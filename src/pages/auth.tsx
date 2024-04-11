@@ -10,6 +10,7 @@ import ForgotPassword from '@/components/auth/forgot-password';
 import ForgotPasswordVerify from '@/components/auth/forgot-password-verify';
 import Login from '@/components/auth/login';
 import PasswordSuccess from '@/components/auth/password-success';
+import Signup from '@/components/auth/signup';
 import VerifyAccount from '@/components/auth/verify-account';
 import { useIsAuthenticated } from '@/hooks';
 
@@ -22,6 +23,7 @@ const routeParams = [
   'password-success',
   'complete-login',
   'complete-signup',
+  'signup',
 ];
 
 export default function Auth() {
@@ -88,6 +90,10 @@ export default function Auth() {
 
             <Case condition={isPageOpen('complete-signup')}>
               <CompleteSignup onClose={onClose} />
+            </Case>
+
+            <Case condition={isPageOpen('signup')}>
+              <Signup onClose={onClose} />
             </Case>
           </Switch>
         </ModalBody>
