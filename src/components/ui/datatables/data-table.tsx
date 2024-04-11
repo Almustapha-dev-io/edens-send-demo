@@ -171,7 +171,6 @@ export default function DataTable<T>({
       <NoData
         h="400px"
         py="24"
-        label={isFetching ? '' : 'No Data'}
         retryHandler={retryFetch}
         isLoading={isFetching}
         bg="#fff"

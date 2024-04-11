@@ -94,10 +94,11 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
 
     return (
       <InputGroup size={size} {...rest}>
-        <InputLeftElement>
+        <InputLeftElement w="fit-content">
           <Box
             pos="relative"
             my="auto"
+            px="2"
             w="full"
             h="90%"
             display="flex"
@@ -143,7 +144,7 @@ const PhoneNumberInput = forwardRef<HTMLInputElement, PhoneNumberInputProps>(
           </Box>
         </InputLeftElement>
         <Input
-          pl="53px"
+          pl="58px"
           pr={inputPr}
           type="text"
           value={phoneNumber}

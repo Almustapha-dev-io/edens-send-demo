@@ -8,3 +8,4 @@ export const COMPLETE_LOGIN = '?complete-login=true';
 export const COMPLETE_SIGNUP = '?complete-signup=true';
 export const LOGIN = '?login=true';
 export const VERIFY_ACCOUNT = '?verify-account=true';
+export const SIGNUP = '?signup=true';

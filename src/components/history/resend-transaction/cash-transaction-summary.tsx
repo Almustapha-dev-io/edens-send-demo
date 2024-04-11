@@ -103,16 +103,10 @@ export default function CashTransactionSummary({ transaction }: Props) {
   }, [createParams, isNgTransaction]);
 
   useEffect(() => {
-    if (
-      !isLoadingTrParams &&
-      !isLoading &&
-      isTrParamsSuccess &&
-      transactionParams
-    ) {
+    if (!isLoadingTrParams && isTrParamsSuccess && transactionParams) {
       onOpenConfirmRate();
     }
   }, [
-    isLoading,
     isLoadingTrParams,
     isTrParamsSuccess,
     onOpenConfirmRate,
@@ -181,6 +175,7 @@ export default function CashTransactionSummary({ transaction }: Props) {
         transaction={transaction}
         params={transactionParams}
       />
+
       <VStack w="519px" maxW="full" spacing="6">
         <Heading
           as="h1"
@@ -228,6 +223,7 @@ export default function CashTransactionSummary({ transaction }: Props) {
                 fractionDigits: 2,
               })}
             </Button>
+
             <RouterLink w="full" to=".." relative="path">
               <Button
                 size="lg"

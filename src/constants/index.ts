@@ -46,5 +46,8 @@ export const FLAG_URL = (iso2: string) =>
 export const PHONE_NUMBER_PATTERN =
   /^([+(\d]{1})(([\d+() -.]){5,16})([+(\d]{1})$/;
 
+export const SIGNUP_EMAIL_SESSION_STORAGE_KEY =
+  '@edens.send:sessionStorageEmail';
+
 export * from './routes';
 export * from './transaction-params';
