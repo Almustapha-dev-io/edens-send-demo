@@ -50,7 +50,7 @@ export default function Auth() {
 
   return (
     <Modal
-      size="md"
+      size={isPageOpen('signup') ? { base: 'full', md: 'md' } : 'md'}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isOpen={routeParams.some(isPageOpen)}
