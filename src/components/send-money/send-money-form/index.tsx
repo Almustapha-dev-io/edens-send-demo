@@ -350,7 +350,7 @@ export default function SendMoneyForm() {
             variant={{ base: 'outline', lg: 'solid' }}
             type="submit"
             isLoading={isLoading}
-            // isDisabled={watch('country') === 'NG'}
+            isDisabled={watch('country') === 'NG'}
           >
             {watch('country') === 'NG' ? 'Coming soon...' : 'Continue'}
           </Button>
