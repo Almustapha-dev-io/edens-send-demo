@@ -38,7 +38,7 @@ export default function NoData({
           />
         )}
         <Heading fontWeight="semibold" fontSize="lg">
-          {label ?? 'No Data Found'}
+          {label ?? 'Nothing to see here'}
         </Heading>
         {!!retryHandler && (
           <Button

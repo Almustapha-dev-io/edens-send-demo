@@ -20,37 +20,35 @@ export default function RootLayout({ children }: PropsWithChildren) {
     getUser();
   }, [getUser]);
 
-  if (isLoading) {
-    return (
-      <Center w="full" h="100vh">
+  return (
+    <>
+      <Center w="full" h="100vh" display={isLoading ? 'flex' : 'none'}>
         <Loader />
       </Center>
-    );
-  }
-
-  return (
-    <Flex
-      w="full"
-      minH="100vh"
-      direction="column"
-      justify="flex-start"
-      align="flex-start"
-    >
-      <Header />
-      <Box
-        as="main"
+      <Flex
+        display={isLoading ? 'none' : 'flex'}
         w="full"
-        pt={{ base: '66px', md: '91px' }}
-        pb="80px"
-        flex="1"
-        display="flex"
-        flexDirection="column"
-        bg={{ base: '#fff', md: '#F4FAF9' }}
-        pos="relative"
+        minH="100vh"
+        direction="column"
+        justify="flex-start"
+        align="flex-start"
       >
-        {children}
-      </Box>
-      <Footer />
-    </Flex>
+        <Header />
+        <Box
+          as="main"
+          w="full"
+          pt={{ base: '66px', md: '91px' }}
+          pb="80px"
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          bg={{ base: '#fff', md: '#F4FAF9' }}
+          pos="relative"
+        >
+          {children}
+        </Box>
+        <Footer />
+      </Flex>
+    </>
   );
 }

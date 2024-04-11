@@ -182,7 +182,7 @@ export default function TransactionsTableSm({
   }
 
   if (!transactions.length) {
-    return <NoData label="No transactions found!" retryHandler={refetch} />;
+    return <NoData retryHandler={refetch} />;
   }
 
   return (
