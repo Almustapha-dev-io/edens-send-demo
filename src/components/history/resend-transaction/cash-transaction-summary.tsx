@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/indent */
 import { Button, Heading, useDisclosure, VStack } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import RouterLink from '@/components/ui/router-link';
 import { CARD_SHADOW } from '@/constants';
 import { useCreateTransactionsParams, useInitiateSendMoney } from '@/hooks';
 import { formatPrice, generatePaymentLink, snakeToFlat } from '@/lib/helpers';
+import { TTransactionParamsRes } from '@/lib/redux/slices/api-slice/builders';
 import { TMutationCreatorResult } from '@/lib/redux/slices/api-slice/types';
 
+import ChangeAmount from './change-amount';
 import ExchangeRateUpdate from './exchange-rate-update';
 import RecipientDetails from './recipient-details';
 import TransferDetails from './transfer-details';
@@ -16,20 +19,6 @@ type Props = {
 };
 
 export default function CashTransactionSummary({ transaction }: Props) {
-  const formattedAmount = useMemo(
-    () => ({
-      amount:
-        isNaN(+transaction.amount) || !isFinite(+transaction.amount)
-          ? 0
-          : +transaction.amount / 100,
-      fee:
-        isNaN(+transaction.fee) || !isFinite(+transaction.fee)
-          ? 0
-          : +transaction.fee / 100,
-    }),
-    [transaction.amount, transaction.fee]
-  );
-
   const triggerRef = useRef<TMutationCreatorResult>();
 
   const {
@@ -53,6 +42,29 @@ export default function CashTransactionSummary({ transaction }: Props) {
     hideErrorMsg: true,
     hideSuccessMsg: true,
   });
+
+  const [updatedAmount, setUpdatedAmount] = useState<
+    (TTransactionParamsRes & { amount: number }) | null
+  >(null);
+
+  const formattedAmount = useMemo(() => {
+    if (updatedAmount)
+      return {
+        amount: updatedAmount.amount,
+        fee: updatedAmount.transactionParameters.fee,
+      };
+
+    return {
+      amount:
+        isNaN(+transaction.amount) || !isFinite(+transaction.amount)
+          ? 0
+          : +transaction.amount / 100,
+      fee:
+        isNaN(+transaction.fee) || !isFinite(+transaction.fee)
+          ? 0
+          : +transaction.fee / 100,
+    };
+  }, [transaction.amount, transaction.fee, updatedAmount]);
 
   const createParams = useCallback(() => {
     if (triggerRef.current) triggerRef.current.abort();
@@ -97,10 +109,10 @@ export default function CashTransactionSummary({ transaction }: Props) {
   formattedAmountRef.current = formattedAmount;
 
   useEffect(() => {
-    if (isNgTransaction) {
+    if (isNgTransaction && !updatedAmount) {
       createParams();
     }
-  }, [createParams, isNgTransaction]);
+  }, [createParams, isNgTransaction, updatedAmount]);
 
   useEffect(() => {
     if (!isLoadingTrParams && isTrParamsSuccess && transactionParams) {
@@ -167,6 +179,12 @@ export default function CashTransactionSummary({ transaction }: Props) {
     );
   }, [formattedAmount.amount, transactionParams]);
 
+  const {
+    isOpen: isChangeAmountOpen,
+    onClose: onCloseChangeAmount,
+    onOpen: onOpenChangeAmount,
+  } = useDisclosure();
+
   return (
     <>
       <ExchangeRateUpdate
@@ -174,6 +192,14 @@ export default function CashTransactionSummary({ transaction }: Props) {
         onClose={onCloseConfirmRate}
         transaction={transaction}
         params={transactionParams}
+      />
+
+      <ChangeAmount
+        type="cash"
+        isOpen={isChangeAmountOpen}
+        onClose={onCloseChangeAmount}
+        transaction={transaction}
+        onComplete={setUpdatedAmount}
       />
 
       <VStack w="519px" maxW="full" spacing="6">
@@ -201,12 +227,15 @@ export default function CashTransactionSummary({ transaction }: Props) {
             accountNumber={accountNumber}
             emailAddress={transaction.beneficiary_email ?? '-'}
           />
+
           <TransferDetails
             type="cash"
             recipientValue={recipientValue}
             amount={formattedAmount.amount}
             fee={formattedAmount.fee}
             recipientName={transaction.beneficiary_name ?? '-'}
+            onChangeAmount={onOpenChangeAmount}
+            isChangeAmountDisabled={isLoading || isLoadingTrParams}
           />
 
           <VStack w="full" spacing="4">
