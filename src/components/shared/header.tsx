@@ -1,7 +1,7 @@
-import { ChevronDownIcon } from '@chakra-ui/icons';
 import {
   Avatar,
   Box,
+  Button,
   HStack,
   Image,
   Menu,
@@ -11,7 +11,6 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import { Else, If, Then } from 'react-if';
-import { useNavigate } from 'react-router-dom';
 
 import { useIsAuthenticated, useUser } from '@/hooks';
 import { signOut, useAppDispatch } from '@/lib/redux';
@@ -26,7 +25,6 @@ export default function Header() {
   const user = useUser();
 
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const logoutHandler = () => {
     dispatch(signOut());
@@ -77,7 +75,12 @@ export default function Header() {
               </Menu>
             </Then>
             <Else>
-              <Menu>
+              <RouterLink to="?login=true">
+                <Button size="md" variant="link" leftIcon={<CircleUserIcon />}>
+                  Login/Signup
+                </Button>
+              </RouterLink>
+              {/* <Menu>
                 {({ isOpen }) => (
                   <>
                     <MenuButton>
@@ -113,7 +116,7 @@ export default function Header() {
                     </MenuList>
                   </>
                 )}
-              </Menu>
+              </Menu> */}
             </Else>
           </If>
         </HStack>

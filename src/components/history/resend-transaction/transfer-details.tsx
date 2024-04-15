@@ -1,7 +1,5 @@
 import { Button, Heading, HStack, VStack } from '@chakra-ui/react';
 
-import RouterLink from '@/components/ui/router-link';
-import { SEND_AIRTIME_ROUTE, SEND_MONEY_ROUTE } from '@/constants';
 import { formatPrice } from '@/lib/helpers';
 
 import SummaryItem from './summary-item';
@@ -12,6 +10,8 @@ type Props = {
   amount: number;
   recipientValue?: string;
   type: 'airtime' | 'cash';
+  onChangeAmount?(): void;
+  isChangeAmountDisabled?: boolean;
 };
 
 export default function TransferDetails({
@@ -19,7 +19,8 @@ export default function TransferDetails({
   fee,
   recipientName,
   recipientValue,
-  type,
+  isChangeAmountDisabled,
+  onChangeAmount,
 }: Props) {
   return (
     <VStack w="full" align="flex-start">
@@ -34,23 +35,20 @@ export default function TransferDetails({
             <HStack w="full" justify="space-between">
               <span>{formatPrice(amount + fee, { fractionDigits: 2 })}</span>
 
-              <RouterLink
-                w="fit-content"
-                to={type === 'cash' ? SEND_MONEY_ROUTE : SEND_AIRTIME_ROUTE}
+              <Button
+                size="sm"
+                fontWeight="400"
+                fontSize="13px"
+                variant="ghost"
+                bg="#E9F5F2"
+                _hover={{
+                  bg: 'primary.50',
+                }}
+                onClick={onChangeAmount}
+                isDisabled={isChangeAmountDisabled}
               >
-                <Button
-                  size="sm"
-                  fontWeight="400"
-                  fontSize="13px"
-                  variant="ghost"
-                  bg="#E9F5F2"
-                  _hover={{
-                    bg: 'primary.50',
-                  }}
-                >
-                  Change
-                </Button>
-              </RouterLink>
+                Change
+              </Button>
             </HStack>
           }
         />

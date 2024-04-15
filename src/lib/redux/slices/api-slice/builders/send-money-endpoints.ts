@@ -3,7 +3,7 @@ import { HttpMethods } from '@/constants';
 
 import { TAppEndpointBuilder } from '../types';
 
-type TTransactionParamsRes = Record<
+export type TTransactionParamsRes = Record<
   'transactionParameters',
   TTtransactionParams
 >;

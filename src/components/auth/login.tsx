@@ -58,9 +58,17 @@ export default function Login({ onClose }: Props) {
           Login
         </Heading>
 
-        <Text fontWeight="400" fontSize="14px">
-          Enter your email and password to continue.
-        </Text>
+        <VStack w="full" align="flex-start" spacing="0">
+          <Text fontWeight="400" fontSize="14px">
+            Enter your email and password to continue.
+          </Text>
+          <Text fontWeight="400" fontSize="14px">
+            Don&apos;t have an account yet?{' '}
+            <RouterLink to="?signup=true" fontWeight="500">
+              Create one
+            </RouterLink>
+          </Text>
+        </VStack>
 
         {!!error && (
           <Text color="red.500" fontSize="sm" fontWeight="700">
