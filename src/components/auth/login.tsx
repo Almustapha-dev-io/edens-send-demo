@@ -6,6 +6,7 @@ import {
   Heading,
   HStack,
   Input,
+  ModalCloseButton,
   Text,
   VStack,
 } from '@chakra-ui/react';
@@ -27,7 +28,8 @@ type Props = {
   onClose(): void;
 };
 
-export default function Login({ onClose }: Props) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export default function Login(_props: Props) {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
@@ -52,69 +54,65 @@ export default function Login({ onClose }: Props) {
   });
 
   return (
-    <chakra.form w="full" onSubmit={handleSubmit}>
-      <VStack w="full" spacing="20px" align="flex-start">
-        <Heading fontWeight="700" fontSize="20px">
-          Login
-        </Heading>
+    <>
+      <ModalCloseButton />
+      <chakra.form w="full" onSubmit={handleSubmit}>
+        <VStack w="full" spacing="20px" align="flex-start">
+          <Heading fontWeight="700" fontSize="20px">
+            Login
+          </Heading>
 
-        <VStack w="full" align="flex-start" spacing="0">
           <Text fontWeight="400" fontSize="14px">
             Enter your email and password to continue.
           </Text>
-          <Text fontWeight="400" fontSize="14px">
-            Don&apos;t have an account yet?{' '}
-            <RouterLink to="?signup=true" fontWeight="500">
-              Create one
+
+          {!!error && (
+            <Text color="red.500" fontSize="sm" fontWeight="700">
+              {error}
+            </Text>
+          )}
+
+          <FormControl>
+            <FormLabel>Email</FormLabel>
+            <Input size="lg" type="email" ref={emailRef} />
+          </FormControl>
+
+          <FormControl>
+            <FormLabel>Password</FormLabel>
+            <PasswordInput size="lg" ref={passwordRef} />
+          </FormControl>
+
+          <HStack w="full" justify="flex-end">
+            <RouterLink to="?forgot-password=true" fontSize="14px">
+              Forgot Password
             </RouterLink>
-          </Text>
+          </HStack>
+
+          <VStack w="full" spacing="3" mt="3">
+            <Button
+              w="full"
+              size="lg"
+              fontSize="sm"
+              type="submit"
+              isLoading={isLoading}
+            >
+              Continue
+            </Button>
+
+            <RouterLink to="?signup=true" w="full">
+              <Button
+                w="full"
+                size="lg"
+                fontSize="sm"
+                variant="ghost"
+                isDisabled={isLoading}
+              >
+                Create account
+              </Button>
+            </RouterLink>
+          </VStack>
         </VStack>
-
-        {!!error && (
-          <Text color="red.500" fontSize="sm" fontWeight="700">
-            {error}
-          </Text>
-        )}
-
-        <FormControl>
-          <FormLabel>Email</FormLabel>
-          <Input size="lg" type="email" ref={emailRef} />
-        </FormControl>
-
-        <FormControl>
-          <FormLabel>Password</FormLabel>
-          <PasswordInput size="lg" ref={passwordRef} />
-        </FormControl>
-
-        <HStack w="full" justify="flex-end">
-          <RouterLink to="?forgot-password=true" fontSize="14px">
-            Forgot Password
-          </RouterLink>
-        </HStack>
-
-        <VStack w="full" spacing="3" mt="3">
-          <Button
-            w="full"
-            size="lg"
-            fontSize="sm"
-            type="submit"
-            isLoading={isLoading}
-          >
-            Continue
-          </Button>
-
-          <Button
-            w="full"
-            size="lg"
-            fontSize="sm"
-            variant="ghost"
-            onClick={onClose}
-            isDisabled={isLoading}
-          >
-            Close
-          </Button>
-        </VStack>
-      </VStack>
-    </chakra.form>
+      </chakra.form>
+    </>
   );
 }
